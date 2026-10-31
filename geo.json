@@ -1,0 +1,866 @@
+{
+ "source": "© OpenStreetMap contributors (Nominatim)",
+ "places": [
+  {
+   "name": "Masteri Thảo Điền",
+   "kind": "project",
+   "aliases": [
+    "masteri thao dien"
+   ],
+   "lat": 10.802649,
+   "lon": 106.742399,
+   "osm": "Masteri Thảo Điền, 159, Đường Võ Nguyên Giáp, Khu phố 4, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Masteri An Phú",
+   "kind": "project",
+   "aliases": [
+    "masteri an phu"
+   ],
+   "lat": 10.803665,
+   "lon": 106.747227,
+   "osm": "Chung cư Masteri An Phú, 191, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Lumière Riverside",
+   "kind": "project",
+   "aliases": [
+    "lumiere riverside",
+    "lumiere"
+   ],
+   "lat": 10.804035,
+   "lon": 106.748843,
+   "osm": "Lumière Riverside, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Lexington Residence",
+   "kind": "project",
+   "aliases": [
+    "lexington"
+   ],
+   "lat": 10.798071,
+   "lon": 106.752375,
+   "osm": "Lexington Residence, Mai Chí Thọ, Khu phố 7, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "The Sun Avenue",
+   "kind": "project",
+   "aliases": [
+    "sun avenue"
+   ],
+   "lat": 10.784174,
+   "lon": 106.746177,
+   "osm": "The Sun Avenue, Đường D2 / Đường số 51, Khu phố 14, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "The Estella",
+   "kind": "project",
+   "aliases": [
+    "estella"
+   ],
+   "lat": 10.800145,
+   "lon": 106.748896,
+   "osm": "The Estella, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Vista Verde",
+   "kind": "project",
+   "aliases": [
+    "vista verde"
+   ],
+   "lat": 10.776708,
+   "lon": 106.756627,
+   "osm": "Chung cư Vista Verde, 2, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "The Vista An Phú",
+   "kind": "project",
+   "aliases": [
+    "the vista an phu",
+    "vista an phu"
+   ],
+   "lat": 10.805518,
+   "lon": 106.751608,
+   "osm": "Chung cư The Vista, 628C, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Feliz en Vista",
+   "kind": "project",
+   "aliases": [
+    "feliz en vista",
+    "feliz"
+   ],
+   "lat": 10.777816,
+   "lon": 106.75571,
+   "osm": "Chung cư Feliz En Vista, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Đảo Kim Cương",
+   "kind": "project",
+   "aliases": [
+    "dao kim cuong",
+    "diamond island"
+   ],
+   "lat": 10.777015,
+   "lon": 106.746843,
+   "osm": "Diamond Island, Trần Quý Kiên, Khu phố 36, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Empire City",
+   "kind": "project",
+   "aliases": [
+    "empire city",
+    "emprirecity",
+    "empirecity",
+    "linden",
+    "tilia",
+    "narra"
+   ],
+   "lat": 10.769545,
+   "lon": 106.713512,
+   "osm": "Empire City Linden Residence, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "The Metropole Thủ Thiêm",
+   "kind": "project",
+   "aliases": [
+    "metropole"
+   ],
+   "lat": 10.778107,
+   "lon": 106.713333,
+   "osm": "The Metropole Thủ Thiêm, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Khu đô thị Sala",
+   "kind": "project",
+   "aliases": [
+    "sala",
+    "sarimi",
+    "sadora",
+    "sarica"
+   ],
+   "lat": 10.771861,
+   "lon": 106.724782,
+   "osm": "Khu đô thị Sala, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Palm Heights",
+   "kind": "project",
+   "aliases": [
+    "palm heights"
+   ],
+   "lat": 10.792851,
+   "lon": 106.759084,
+   "osm": "Palm Heights, Khu phố 9, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Cantavil An Phú",
+   "kind": "project",
+   "aliases": [
+    "cantavil"
+   ],
+   "lat": 10.800995,
+   "lon": 106.747056,
+   "osm": "Toà Nhà Parkson Cantavil, B, Đường Số 25, Khu phố 4, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Petroland",
+   "kind": "project",
+   "aliases": [
+    "petroland"
+   ],
+   "lat": 10.791882,
+   "lon": 106.776789,
+   "osm": "Chung cư Petroland, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Chung cư An Lộc",
+   "kind": "project",
+   "aliases": [
+    "an loc"
+   ],
+   "lat": 10.798618,
+   "lon": 106.743611,
+   "osm": "Chung Cư An Lộc, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Homyland",
+   "kind": "project",
+   "aliases": [
+    "homyland"
+   ],
+   "lat": 10.789632,
+   "lon": 106.7688,
+   "osm": "Chung cư Homyland Riverside, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "CitiHome",
+   "kind": "project",
+   "aliases": [
+    "citihome",
+    "citi home"
+   ],
+   "lat": 10.767459,
+   "lon": 106.784229,
+   "osm": "Căn hộ Citi Home, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Citi Soho",
+   "kind": "project",
+   "aliases": [
+    "citi soho",
+    "citisoho"
+   ],
+   "lat": 10.770181,
+   "lon": 106.7868,
+   "osm": "Căn hộ Citi Soho, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "One Verandah",
+   "kind": "project",
+   "aliases": [
+    "one verandah"
+   ],
+   "lat": 10.776493,
+   "lon": 106.75085,
+   "osm": "Toà Nhà One Verandah, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Imperia An Phú",
+   "kind": "project",
+   "aliases": [
+    "imperia"
+   ],
+   "lat": 10.79852,
+   "lon": 106.750464,
+   "osm": "Imperia An Phu, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "The Krista",
+   "kind": "project",
+   "aliases": [
+    "krista"
+   ],
+   "lat": 10.790263,
+   "lon": 106.770488,
+   "osm": "Chung cư The Krista, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Centana Thủ Thiêm",
+   "kind": "project",
+   "aliases": [
+    "centana"
+   ],
+   "lat": 10.79088,
+   "lon": 106.752501,
+   "osm": "Căn Hộ Centana Thủ Thiêm, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Thảo Điền Pearl",
+   "kind": "project",
+   "aliases": [
+    "thao dien pearl"
+   ],
+   "lat": 10.801663,
+   "lon": 106.733283,
+   "osm": "Chung Cư Thảo Điền Pearl, 12, Quốc Hương, Khu phố 5, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Tropic Garden",
+   "kind": "project",
+   "aliases": [
+    "tropic garden"
+   ],
+   "lat": 10.81412,
+   "lon": 106.728849,
+   "osm": "Chung cư Tropic Garden, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Gateway Thảo Điền",
+   "kind": "project",
+   "aliases": [
+    "gateway thao dien",
+    "gateway"
+   ],
+   "lat": 10.804065,
+   "lon": 106.74605,
+   "osm": "A40.05 Aspen Tower, Gateway, 177 Hanoi Highway, Phường Thảo Điền, Thành phố Thủ Đức, Thành phố Hồ Chí Minh, Đường Số 9, Chung cư Gateway Thả"
+  },
+  {
+   "name": "The Nassim",
+   "kind": "project",
+   "aliases": [
+    "nassim"
+   ],
+   "lat": 10.804875,
+   "lon": 106.743901,
+   "osm": "Nassim, Đường Số 11, Khu phố 3, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Q2 Thảo Điền",
+   "kind": "project",
+   "aliases": [
+    "q2 thao dien"
+   ],
+   "lat": 10.802908,
+   "lon": 106.737899,
+   "osm": "Thảo Điền, Khu phố 5, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "The River Thủ Thiêm",
+   "kind": "project",
+   "aliases": [
+    "the river thu thiem"
+   ],
+   "lat": 10.782635,
+   "lon": 106.719366,
+   "osm": "The River - Thu Thiem, 23, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "D'Lusso",
+   "kind": "project",
+   "aliases": [
+    "d lusso",
+    "dlusso",
+    "d'lusso"
+   ],
+   "lat": 10.789944,
+   "lon": 106.755129,
+   "osm": "D'Lusso Quận 2, Nguyễn Thị Định, Khu phố 10, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "New City Thủ Thiêm",
+   "kind": "project",
+   "aliases": [
+    "new city"
+   ],
+   "lat": 10.781304,
+   "lon": 106.735645,
+   "osm": "New City Thủ Thiêm, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "La Astoria",
+   "kind": "project",
+   "aliases": [
+    "la astoria"
+   ],
+   "lat": 10.789132,
+   "lon": 106.767598,
+   "osm": "Chung cư La Astoria, 383, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Chung cư Bộ Công An",
+   "kind": "project",
+   "aliases": [
+    "bo cong an"
+   ],
+   "lat": 10.794959,
+   "lon": 106.736531,
+   "osm": "Chung Cư Bộ Công An, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Thủ Thiêm Dragon",
+   "kind": "project",
+   "aliases": [
+    "thu thiem dragon"
+   ],
+   "lat": 10.762491,
+   "lon": 106.759342,
+   "osm": "Công viên Căn hộ Thủ Thiêm Dragon, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Thủ Thiêm Sky",
+   "kind": "project",
+   "aliases": [
+    "thu thiem sky"
+   ],
+   "lat": 10.81474,
+   "lon": 106.730368,
+   "osm": "Chung cư Thủ Thiêm Sky, 188/1, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Fideco Riverview",
+   "kind": "project",
+   "aliases": [
+    "fideco"
+   ],
+   "lat": 10.803389,
+   "lon": 106.738193,
+   "osm": "Fideco Riverview, Thảo Điền, Khu phố 3, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Xi Riverview Palace",
+   "kind": "project",
+   "aliases": [
+    "xi riverview"
+   ],
+   "lat": 10.816601,
+   "lon": 106.730691,
+   "osm": "Xi Riverview Palace, 190, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Waterina Suites",
+   "kind": "project",
+   "aliases": [
+    "waterina"
+   ],
+   "lat": 10.778551,
+   "lon": 106.754222,
+   "osm": "Chung Cư Waterina Suites, Đường 52 - TML, Khu phố 14, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "De Capella",
+   "kind": "project",
+   "aliases": [
+    "de capella"
+   ],
+   "lat": 10.787345,
+   "lon": 106.73496,
+   "osm": "Chung cư De Capella, 116, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "The Ascent",
+   "kind": "project",
+   "aliases": [
+    "the ascent"
+   ],
+   "lat": 10.807335,
+   "lon": 106.731533,
+   "osm": "Chung cư The Ascent, 58, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Parcspring",
+   "kind": "project",
+   "aliases": [
+    "parcspring",
+    "parc spring"
+   ],
+   "lat": 10.790701,
+   "lon": 106.771454,
+   "osm": "Chung cư PARCSpring, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Bình Minh",
+   "kind": "project",
+   "aliases": [
+    "chung cu binh minh"
+   ],
+   "lat": 10.789453,
+   "lon": 106.735524,
+   "osm": "Chung cư Bình Minh, Vành Đai Tây, Khu phố 22, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Xuân Thủy",
+   "kind": "street",
+   "aliases": [
+    "xuan thuy"
+   ],
+   "lat": 10.803483,
+   "lon": 106.737541,
+   "osm": "Đường Xuân Thuỷ, Thảo Điền, Khu phố 5, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Quốc Hương",
+   "kind": "street",
+   "aliases": [
+    "quoc huong"
+   ],
+   "lat": 10.802776,
+   "lon": 106.73245,
+   "osm": "Quốc Hương, Khu phố 14, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Văn Hưởng",
+   "kind": "street",
+   "aliases": [
+    "nguyen van huong"
+   ],
+   "lat": 10.81094,
+   "lon": 106.730871,
+   "osm": "Nguyễn Văn Hưởng, Khu phố 9, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Trần Ngọc Diện",
+   "kind": "street",
+   "aliases": [
+    "tran ngoc dien"
+   ],
+   "lat": 10.804815,
+   "lon": 106.73997,
+   "osm": "Trần Ngọc Diện, Khu phố 3, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Cừ",
+   "kind": "street",
+   "aliases": [
+    "nguyen cu"
+   ],
+   "lat": 10.804095,
+   "lon": 106.728167,
+   "osm": "Đường Nguyễn Cừ, Khu phố 14, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Tống Hữu Định",
+   "kind": "street",
+   "aliases": [
+    "tong huu dinh"
+   ],
+   "lat": 10.80596,
+   "lon": 106.733066,
+   "osm": "Tống Hữu Định, Khu phố 6, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Lê Văn Miến",
+   "kind": "street",
+   "aliases": [
+    "le van mien"
+   ],
+   "lat": 10.805222,
+   "lon": 106.73333,
+   "osm": "Lê Văn Miến, Khu phố 6, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Mai Chí Thọ",
+   "kind": "street",
+   "aliases": [
+    "mai chi tho"
+   ],
+   "lat": 10.806108,
+   "lon": 106.754632,
+   "osm": "Mai Chí Thọ, Khu phố 8, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Lương Định Của",
+   "kind": "street",
+   "aliases": [
+    "luong dinh cua"
+   ],
+   "lat": 10.783938,
+   "lon": 106.727151,
+   "osm": "Lương Định Của, Khu phố 21, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Trần Não",
+   "kind": "street",
+   "aliases": [
+    "tran nao"
+   ],
+   "lat": 10.799833,
+   "lon": 106.733441,
+   "osm": "Trần Não, Khu phố 16, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Duy Trinh",
+   "kind": "street",
+   "aliases": [
+    "nguyen duy trinh"
+   ],
+   "lat": 10.788314,
+   "lon": 106.758158,
+   "osm": "Nguyễn Duy Trinh, Khu phố 15, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Đồng Văn Cống",
+   "kind": "street",
+   "aliases": [
+    "dong van cong"
+   ],
+   "lat": 10.773763,
+   "lon": 106.762062,
+   "osm": "Đồng Văn Cống, Khu phố 12, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Thị Định",
+   "kind": "street",
+   "aliases": [
+    "nguyen thi dinh"
+   ],
+   "lat": 10.759714,
+   "lon": 106.786874,
+   "osm": "Nguyễn Thị Định, Khu phố 24, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Quý Cảnh",
+   "kind": "street",
+   "aliases": [
+    "nguyen quy canh"
+   ],
+   "lat": 10.797158,
+   "lon": 106.737201,
+   "osm": "Nguyễn Quý Cảnh, Khu phố 2, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Võ Trường Toản",
+   "kind": "street",
+   "aliases": [
+    "vo truong toan"
+   ],
+   "lat": 10.805286,
+   "lon": 106.746824,
+   "osm": "Võ Trường Toản, Khu phố 3, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Đường Lê Hữu Kiều",
+   "kind": "street",
+   "aliases": [
+    "le huu kieu"
+   ],
+   "lat": 10.785212,
+   "lon": 106.756039,
+   "osm": "Lê Hữu Kiều, Khu phố 35, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Trần Lựu",
+   "kind": "street",
+   "aliases": [
+    "tran luu"
+   ],
+   "lat": 10.794411,
+   "lon": 106.741103,
+   "osm": "Trần Lựu, Khu phố 1, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Văn Giáp",
+   "kind": "street",
+   "aliases": [
+    "nguyen van giap"
+   ],
+   "lat": 10.782285,
+   "lon": 106.77609,
+   "osm": "Nguyễn Văn Giáp, Khu phố 27, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Bát Nàn",
+   "kind": "street",
+   "aliases": [
+    "bat nan"
+   ],
+   "lat": 10.776877,
+   "lon": 106.750517,
+   "osm": "Bát Nàn, Khu dân cư Thạnh Mỹ Lợi, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Thân Văn Nhiếp",
+   "kind": "street",
+   "aliases": [
+    "than van nhiep"
+   ],
+   "lat": 10.782192,
+   "lon": 106.748355,
+   "osm": "Thân Văn Nhiếp, Khu phố 14, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Quách Giai",
+   "kind": "street",
+   "aliases": [
+    "quach giai"
+   ],
+   "lat": 10.764239,
+   "lon": 106.75935,
+   "osm": "Quách Giai, Khu phố 15, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Tư Nghiêm",
+   "kind": "street",
+   "aliases": [
+    "nguyen tu nghiem"
+   ],
+   "lat": 10.785709,
+   "lon": 106.762295,
+   "osm": "Nguyễn Tư Nghiêm, Khu phố 31, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Phan Văn Đáng",
+   "kind": "street",
+   "aliases": [
+    "phan van dang"
+   ],
+   "lat": 10.777449,
+   "lon": 106.756164,
+   "osm": "Phan Văn Đáng, Khu phố 14, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Đường Vũ Tông Phan",
+   "kind": "street",
+   "aliases": [
+    "vu tong phan"
+   ],
+   "lat": 10.796966,
+   "lon": 106.741667,
+   "osm": "Vũ Tông Phan, Khu phố 1, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Thanh Sơn",
+   "kind": "street",
+   "aliases": [
+    "nguyen thanh son"
+   ],
+   "lat": 10.774809,
+   "lon": 106.755353,
+   "osm": "Nguyễn Thanh Sơn, Khu phố 16, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Đường Nguyễn Văn Kỉnh",
+   "kind": "street",
+   "aliases": [
+    "nguyen van kinh"
+   ],
+   "lat": 10.772441,
+   "lon": 106.756261,
+   "osm": "Nguyễn Văn Kỉnh, Khu dân cư Thạnh Mỹ Lợi, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Phường Thảo Điền",
+   "kind": "ward",
+   "aliases": [
+    "thao dien"
+   ],
+   "lat": 10.802778,
+   "lon": 106.741482,
+   "osm": "Chung cư Masteri Thảo Điền, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Phường An Phú",
+   "kind": "ward",
+   "aliases": [
+    "an phu(?! dong)"
+   ],
+   "lat": 10.803665,
+   "lon": 106.747227,
+   "osm": "Chung cư Masteri An Phú, 191, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Phường An Khánh",
+   "kind": "ward",
+   "aliases": [
+    "an khanh"
+   ],
+   "lat": 10.791898,
+   "lon": 106.734188,
+   "osm": "Trường Mầm non An Khánh, 14, Đường D7, Khu phố 19, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Phường Bình An",
+   "kind": "ward",
+   "aliases": [
+    "binh an"
+   ],
+   "lat": 10.788055,
+   "lon": 106.734139,
+   "osm": "Trường Mầm non Pathway Tuệ Đức - Cơ sở Bình An, Thành phố Thủ Đức, 169/1, Đường D2, Khu phố 22, Phường An Khánh, Thành phố Hồ Chí Minh, 7110"
+  },
+  {
+   "name": "Phường Bình Khánh",
+   "kind": "ward",
+   "aliases": [
+    "binh khanh"
+   ],
+   "lat": 10.787311,
+   "lon": 106.7417,
+   "osm": "Công viên chung cư Bình Khánh, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Phường Bình Trưng Đông",
+   "kind": "ward",
+   "aliases": [
+    "binh trung dong"
+   ],
+   "lat": 10.787876,
+   "lon": 106.775825,
+   "osm": "CH Lẻ : 562 Nguyễn Duy Trinh . Bình Trưng Đông . Q2, Đường Số 6, Khu phố 26, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Phường Bình Trưng Tây",
+   "kind": "ward",
+   "aliases": [
+    "binh trung tay"
+   ],
+   "lat": 10.782311,
+   "lon": 106.760163,
+   "osm": "378 Nguyễn Thị Định . Bình Trưng Tây . Q2, Nguyễn Thị Định, Khu phố 33, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Phường Bình Trưng",
+   "kind": "ward",
+   "aliases": [
+    "binh trung"
+   ],
+   "lat": 10.783647,
+   "lon": 106.765805,
+   "osm": "UBND phường Bình Trưng Tây, 71, Nguyễn Tuyển, Khu phố 31, Phường Bình Trưng, Thành phố Hồ Chí Minh, 71322, Việt Nam"
+  },
+  {
+   "name": "Phường Cát Lái",
+   "kind": "ward",
+   "aliases": [
+    "cat lai"
+   ],
+   "lat": 10.774314,
+   "lon": 106.770941,
+   "osm": "Trường Mầm non Cát Lái, Nguyễn Thị Định, Khu phố 10, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Phường Thạnh Mỹ Lợi",
+   "kind": "ward",
+   "aliases": [
+    "thanh my loi"
+   ],
+   "lat": 10.777982,
+   "lon": 106.761297,
+   "osm": "Thạnh Mỹ Lợi, Khu phố 3, Phường Cát Lái, Thành phố Hồ Chí Minh, 71115, Việt Nam"
+  },
+  {
+   "name": "Phường Thủ Thiêm",
+   "kind": "ward",
+   "aliases": [
+    "thu thiem"
+   ],
+   "lat": 10.776762,
+   "lon": 106.715404,
+   "osm": "Trung bình: The River Thủ Thiêm, The Metropole Thủ Thiêm, Empire City"
+  },
+  {
+   "name": "Phường An Lợi Đông",
+   "kind": "ward",
+   "aliases": [
+    "an loi dong"
+   ],
+   "lat": 10.772853,
+   "lon": 106.723759,
+   "osm": "Công ty CP đầu tư địa ốc Đại Quang Minh, 10, Mai Chí Thọ, Khu phố 26, Phường An Khánh, Thành phố Hồ Chí Minh, 71108, Việt Nam"
+  },
+  {
+   "name": "Victoria Village",
+   "kind": "near",
+   "aliases": [
+    "victoria village",
+    "vitoria village"
+   ],
+   "lat": 10.773763,
+   "lon": 106.762062,
+   "osm": "Theo Đường Đồng Văn Cống"
+  },
+  {
+   "name": "The CBD Premium Home",
+   "kind": "near",
+   "aliases": [
+    "cbd premium",
+    "the cbd"
+   ],
+   "lat": 10.773763,
+   "lon": 106.762062,
+   "osm": "Theo Đường Đồng Văn Cống"
+  },
+  {
+   "name": "Hoàng Anh Riverview",
+   "kind": "near",
+   "aliases": [
+    "hoang anh riverview",
+    "hoang anh river view"
+   ],
+   "lat": 10.81094,
+   "lon": 106.730871,
+   "osm": "Theo Đường Nguyễn Văn Hưởng"
+  }
+ ]
+}

@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
-from crawler import crawl_source, dedupe
+from crawler import crawl_source, dedupe, locate
 
 ROOT=Path(__file__).parent
 LOCK=threading.Lock()
@@ -26,7 +26,7 @@ def merge(previous,fresh,now):
         if x['id'] in ids: continue
         age=(now-datetime.fromisoformat(x.get('seenAt') or now.isoformat())).days
         if age<STALE_DAYS: merged.append(x)
-    return dedupe(merged)
+    return [{**x,"geo":locate(x)} for x in dedupe(merged)]
 def refresh():
     global running
     try:

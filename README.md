@@ -41,6 +41,14 @@ Mỗi lượt crawl gộp với dữ liệu cũ: tin giữ `firstSeen` (lần đ
 
 **Giới hạn**: Batdongsan.com.vn và Nhà Tốt trả 403 cho bot nên hiển thị trạng thái "Bị chặn"; Bibi không vượt chặn, không giả trình duyệt, không vượt CAPTCHA hay đăng nhập. Giá thuê căn hộ Quận 2 phần lớn trên 12 triệu; một lượt thường được khoảng 900 tin 5–25 triệu, trong đó khoảng 100 tin 8–12 triệu. Một số nguồn (Alonhadat, i-Batdongsan, 123nhadatviet) đôi khi trả 429 với IP của GitHub Actions; lượt sau sẽ thử lại. Cấu trúc website có thể đổi; khi một nguồn chuyển sang "Chưa có tin phù hợp" lâu ngày, hãy kiểm tra lại `entry`/`page`/`detail`. Tin có thể đã cho thuê dù vẫn còn trên trang nguồn; luôn kiểm tra tin gốc.
 
+## Bản đồ
+
+Nút **Danh sách / Bản đồ** hiển thị các căn đang lọc trên bản đồ Leaflet (tải từ cdnjs khi mở bản đồ, tile © OpenStreetMap contributors). Pin là tem giá; nhiều căn gần nhau được gộp thành cụm.
+
+Tin đăng hầu như không có tọa độ, nên vị trí là **gần đúng**: `crawler.locate()` khớp tiêu đề + địa chỉ với danh bạ `geo.json` (khoảng 85 dự án, đường, phường Quận 2), ưu tiên dự án → đường → phường. Pin viền nét đứt là vị trí theo đường/phường. Tin chỉ ghi "Quận 2" không được ghim (khoảng 14%).
+
+`geo.json` được tạo một lần bằng `python geocode.py` từ OpenStreetMap Nominatim (User-Agent riêng, ≤ 1 request/giây, chỉ nhận kết quả trong khung Quận 2) rồi commit; crawl thường không gọi Nominatim. Các chỉnh tay sau khi rà kết quả nằm trong `DERIVED`/`NEAR` của `geocode.py`. Thêm dự án mới: thêm dòng vào `PLACES` rồi chạy lại script.
+
 ## GitHub Pages
 
 Workflow `.github/workflows/pages.yml` crawl rồi deploy mỗi 30 phút, khi push vào main/master hoặc chạy thủ công. Trong Settings → Pages, chọn Source: GitHub Actions. GitHub Pages không chạy Python server: runner thu thập dữ liệu rồi đóng gói `listings.json` cùng giao diện; nút tải lại chỉ đọc dữ liệu đã xuất. Dữ liệu lượt trước được khôi phục từ cache Actions, hoặc từ `listings.json` đang public nếu cache bị xóa. Lịch Actions có thể trễ ở giờ cao điểm và bị GitHub tạm ngừng nếu repo không có hoạt động trong 60 ngày.

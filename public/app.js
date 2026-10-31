@@ -2,7 +2,7 @@ const $=s=>document.querySelector(s);
 const demos=[['Masteri Thảo Điền','Thảo Điền',10.5,2,65],['The Sun Avenue','An Phú',11,2,72],['Căn hộ An Phú xanh mát','An Phú',9.5,1,52],['Căn hộ 1PN Bình Trưng','Bình Trưng',8.5,1,48],['Căn hộ sáng thoáng Thủ Thiêm','Thủ Thiêm',11.5,2,68],['Căn hộ 2PN Thạnh Mỹ Lợi','Thạnh Mỹ Lợi',10,2,60]].map((x,i)=>({id:'demo-'+i,title:x[0],address:x[1]+', Quận 2',price:x[2]*1e6,bedrooms:x[3],area:x[4],source:'Dữ liệu minh họa',image:'/assets/room-'+i%3+'.svg',demo:true}));
 // Crawler lưu 5–25 triệu; Bibi tìm 8–12 triệu nên đó là chip mặc định (giữ đúng ">8 và <12").
 const PRICES=[{id:'lt8',label:'Dưới 8 tr',test:p=>p<=8e6},{id:'8-12',label:'8 – 12 tr',test:p=>p>8e6&&p<12e6},{id:'12-15',label:'12 – 15 tr',test:p=>p>=12e6&&p<15e6},{id:'15-20',label:'15 – 20 tr',test:p=>p>=15e6&&p<20e6},{id:'gt20',label:'Trên 20 tr',test:p=>p>=20e6},{id:'all',label:'Tất cả',test:()=>true}];
-const DEFAULTS={price:'8-12',area:'',source:'',hasImage:false,fresh:false,ward:'',beds:'',sort:'new'};
+const DEFAULTS={price:'8-12',area:'',source:'',hasImage:false,fresh:false,ward:'',beds:'',sort:'new',layout:'grid'};
 let saved;try{saved=new Set(JSON.parse(localStorage.getItem('bibi-saved')||'[]'))}catch{saved=new Set()}
 let filters;try{filters={...DEFAULTS,...JSON.parse(localStorage.getItem('bibi-filters')||'{}')}}catch{filters={...DEFAULTS}}
 let view='all',demo=true,autoMode=true,popped=null,data={listings:[],sources:[]},configs=[],timer;
@@ -26,7 +26,47 @@ function renderFilters(base){
  const names=[...new Set(data.listings.map(x=>x.source))].sort();
  if($('#source').options.length-1!==names.length){$('#source').replaceChildren(new Option('Tất cả nguồn',''),...names.map(n=>new Option(n,n)))}
  $('#source').value=names.includes(filters.source)?filters.source:'';$('#source').disabled=demo;
- $('#reset').hidden=JSON.stringify({...filters,sort:'new'})===JSON.stringify(DEFAULTS)&&!$('#query').value;
+ $('#reset').hidden=JSON.stringify({...filters,sort:'new',layout:'grid'})===JSON.stringify(DEFAULTS)&&!$('#query').value;
+}
+// Bản đồ: Leaflet + MarkerCluster chỉ tải khi Bibi mở chế độ bản đồ. Vị trí lấy từ geo.json (OpenStreetMap), gần đúng theo dự án/đường/phường.
+const LEAFLET='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/',CLUSTER='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/';
+let map,tiles,cluster,leaflet,lastKeys='';
+const addCss=href=>{const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.append(l)};
+const addJs=src=>new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=fail;document.head.append(s)});
+const loadLeaflet=()=>leaflet||=(addCss(LEAFLET+'leaflet.min.css'),addCss(CLUSTER+'MarkerCluster.min.css'),addJs(LEAFLET+'leaflet.min.js').then(()=>addJs(CLUSTER+'leaflet.markercluster.min.js')));
+// Tile chuẩn OpenStreetMap (dùng nhẹ, có ghi nguồn); chế độ tối đảo màu bằng CSS trên .leaflet-tile-pane.
+const TILES='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const shortPrice=p=>new Intl.NumberFormat('vi-VN',{maximumFractionDigits:1}).format(p/1e6)+'tr';
+const GEO_LABEL={project:'Theo dự án',near:'Gần đúng theo đường',street:'Gần đúng theo đường',ward:'Gần đúng theo phường'};
+function popup(x){
+ const box=document.createElement('div');box.className='map-pop';
+ if(x.image){const img=document.createElement('img');img.src=x.image;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();box.append(img)}
+ const p=document.createElement('strong');p.textContent=price(x.price)+' /tháng';
+ const h=document.createElement('h4');h.textContent=x.title;
+ const where=document.createElement('small');where.textContent=`${x.geo.place} · ${GEO_LABEL[x.geo.level]||'Gần đúng'}`;
+ const row=document.createElement('div');row.className='map-pop-row';
+ const heart=document.createElement('button');heart.className='heart';heart.append(svg('i-heart',''));
+ const sync=()=>{heart.setAttribute('aria-pressed',saved.has(x.id));heart.setAttribute('aria-label',(saved.has(x.id)?'Bỏ lưu ':'Lưu ')+x.title)};sync();
+ heart.onclick=()=>{saved.has(x.id)?saved.delete(x.id):saved.add(x.id);try{localStorage.setItem('bibi-saved',JSON.stringify([...saved]))}catch{}sync();$('#saved-count').textContent=saved.size;$('#hero-saved').textContent=saved.size};
+ row.append(heart);
+ try{const u=new URL(x.url);if(!['https:','http:'].includes(u.protocol))throw Error();const a=document.createElement('a');a.className='view';a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.append('Xem tin ',svg('i-arrow'));row.append(a)}catch{}
+ const src=document.createElement('small');src.textContent=x.source;
+ box.append(p,h,where,src,row);return box;
+}
+async function renderMap(rows){
+ const placed=rows.filter(x=>x.geo),missing=rows.length-placed.length;
+ $('#map-note').textContent=demo?'Bản minh họa chưa có vị trí; xem tin thật để thấy bản đồ.':`${placed.length} căn trên bản đồ`+(missing?` · ${missing} căn chỉ ghi “Quận 2” nên chưa ghim`:'');
+ try{await loadLeaflet()}catch{$('#map-note').textContent='Chưa tải được bản đồ, thử lại sau nha.';return}
+ if(!map){
+  map=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([10.79,106.745],14);
+  tiles=L.tileLayer(TILES,{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+  cluster=L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:48,spiderfyDistanceMultiplier:1.6,iconCreateFunction:c=>L.divIcon({html:`<span>${c.getChildCount()}</span>`,className:'cluster',iconSize:[48,48]})});
+  map.addLayer(cluster);map.on('click focus',()=>map.scrollWheelZoom.enable());
+ }
+ map.invalidateSize();cluster.clearLayers();
+ cluster.addLayers(placed.map(x=>L.marker([x.geo.lat,x.geo.lon],{title:x.title,icon:L.divIcon({className:'pin-wrap',iconSize:[0,0],html:`<span class="pin${x.geo.level==='project'?'':' approx'}${saved.has(x.id)?' loved':''}">${shortPrice(x.price)}</span>`})}).bindPopup(()=>popup(x),{maxWidth:270,minWidth:220})));
+ const keys=placed.map(x=>x.id).join();
+ if(keys!==lastKeys&&placed.length){lastKeys=keys;map.fitBounds(L.latLngBounds(placed.map(x=>[x.geo.lat,x.geo.lon])).pad(.08),{maxZoom:16})}
 }
 function render(){
  $('#saved-count').textContent=saved.size;$('#hero-saved').textContent=saved.size;$('#results').hidden=view==='sources';$('#sources').hidden=view!=='sources';$('#notice').hidden=view==='sources';
@@ -43,6 +83,9 @@ function render(){
  $('#summary').textContent=view==='sources'?`${configs.length} nguồn được cấu hình · Thu thập từ trang công khai`:`${rows.length} căn hộ ${demo?'minh họa':'phù hợp'} · Quận 2${view==='saved'?'':' · '+(range.id==='all'?'5 – 25 triệu':range.label.replace('tr','triệu'))+'/tháng'}`;
  $('#results').replaceChildren();
  for(const x of rows){const card=$('#card').content.cloneNode(true);const el=s=>card.querySelector(s);el('h3').textContent=x.title;el('.location span').textContent=x.address;el('.beds span').textContent=x.bedrooms?x.bedrooms+' phòng ngủ':'Chưa rõ';el('.area span').textContent=x.area?x.area+' m²':'Chưa rõ';el('.price strong').textContent=price(x.price);el('.badge').textContent=x.demo?'Minh họa':fresh(x)?'Mới nè!':'Tin thật';el('img').src=x.image||'/assets/room-0.svg';el('img').alt=x.demo?'Phối cảnh căn hộ minh họa':x.title;el('img').onerror=e=>{e.target.onerror=null;e.target.src='/assets/room-0.svg';e.target.alt='Hình thay thế minh họa';};el('.source-line').textContent=x.source+(x.seenAt?' · Bibi thấy '+new Date(x.firstSeen||x.seenAt).toLocaleDateString('vi-VN'):' · Không phải tin thật');const link=el('.view');if(x.demo){link.querySelector('span').textContent='Minh họa';link.removeAttribute('target')}else{try{const u=new URL(x.url);if(!['https:','http:'].includes(u.protocol))throw Error();link.href=u.href}catch{link.remove()}}const heart=el('.heart');heart.setAttribute('aria-pressed',saved.has(x.id));if(popped===x.id)heart.classList.add('pop');heart.setAttribute('aria-label',(saved.has(x.id)?'Bỏ lưu ':'Lưu ')+x.title);heart.onclick=()=>{saved.has(x.id)?saved.delete(x.id):saved.add(x.id);popped=saved.has(x.id)?x.id:null;try{localStorage.setItem('bibi-saved',JSON.stringify([...saved]))}catch{}render()};$('#results').append(card)}
+ const showMap=filters.layout==='map'&&view!=='sources';
+ document.querySelectorAll('[data-layout]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.layout===filters.layout));
+ $('#map-wrap').hidden=!showMap;if(showMap){$('#results').hidden=true;renderMap(rows)}
  popped=null;if(!rows.length){const empty=document.createElement('div');empty.className='empty';empty.textContent=view==='saved'?'Chưa thương căn nào hết. Bấm trái tim trên căn Bibi thích để lưu lại nha!':demo?'Hông thấy căn nào hợp. Thử đổi khu vực hoặc từ khóa nha.':data.listings.length?'Hông có căn nào khớp bộ lọc. Thử nới khoảng giá hoặc bấm “Xóa lọc” nha.':'Chưa có tin thật phù hợp. Bấm “Cập nhật tin thật” rồi xem trạng thái nguồn.';$('#results').append(empty)}
  $('#sources').replaceChildren();for(const c of configs){const s=data.sources.find(x=>x.id===c.id);const box=document.createElement('article');box.className='source-card';const a=document.createElement('a');a.href=c.origin+c.entry;a.target='_blank';a.rel='noopener noreferrer';a.append(c.name,svg('i-arrow'));const p=document.createElement('p');const dot=document.createElement('span');dot.className='dot '+(s?s.state==='ok'||s.state==='empty'?s.state:'error':'');const text=document.createElement('span');text.textContent=s?`${STATES[s.state]||STATES.error} · ${s.count} tin · ${s.message}`+(s.checkedAt?` · ${new Date(s.checkedAt).toLocaleString('vi-VN')}`:''):'Chưa chạy thu thập. Bấm cập nhật để kiểm tra nguồn.';p.append(dot,text);box.append(a,p);$('#sources').append(box)}
 }
@@ -51,7 +94,8 @@ document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{view=b.dataset.view;
 $('#query').addEventListener('input',render);
 [['ward','ward'],['beds','beds'],['sort','sort'],['area','area'],['source','source']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{filters[k]=e.target.value;store();render()}));
 [['has-image','hasImage'],['fresh','fresh']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{filters[k]=e.target.checked;store();render()}));
-$('#reset').onclick=()=>{filters={...DEFAULTS};$('#query').value='';store();syncControls();render()};
+document.querySelectorAll('[data-layout]').forEach(b=>b.onclick=()=>{filters.layout=b.dataset.layout;store();render()});
+$('#reset').onclick=()=>{filters={...DEFAULTS,layout:filters.layout};$('#query').value='';store();syncControls();render()};
 $('#search-button').onclick=()=>{view='all';render();$('.content').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})};$('#query').addEventListener('keydown',e=>{if(e.key==='Enter')$('#search-button').click()});$('#mode').onclick=()=>{autoMode=false;demo=!demo;render()};$('#refresh').onclick=async()=>{autoMode=false;demo=false;$('#refresh').disabled=true;try{const res=await fetch('/api/crawl',{method:'POST'});if(!res.ok)throw Error();await load()}catch{$('#status').textContent='Không bắt đầu được thu thập. Thử lại sau nhé.';$('#refresh').disabled=false}};
 function applyTheme(){const t=document.documentElement.dataset.theme==='dark'?'dark':'light';document.documentElement.dataset.effective=t;$('#theme').setAttribute('aria-label',t==='dark'?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối');document.querySelector('meta[name=theme-color]').content=t==='dark'?'#1f1119':'#fff1f6'}
 $('#theme').onclick=()=>{const t=document.documentElement.dataset.effective==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('bibi-theme',t)}catch{}applyTheme()};applyTheme();

@@ -24,6 +24,8 @@
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2c.8 5.2 4.8 9.2 10 10-5.2.8-9.2 4.8-10 10-.8-5.2-4.8-9.2-10-10 5.2-.8 9.2-4.8 10-10z"/></symbol>
 </svg>
 
@@ -97,6 +99,10 @@
         <p id="summary" aria-live="polite"></p>
       </div>
       <div class="actions">
+        <div class="layout-toggle" role="group" aria-label="Cách xem">
+          <button data-layout="grid" aria-pressed="true"><svg class="icon"><use href="#i-grid"/></svg>Danh sách</button>
+          <button data-layout="map" aria-pressed="false"><svg class="icon"><use href="#i-map"/></svg>Bản đồ</button>
+        </div>
         <button id="refresh"><svg class="icon"><use href="#i-refresh"/></svg><span id="refresh-label">Cập nhật tin</span></button>
         <label class="sort"><span>Xếp theo</span><select id="sort" aria-label="Sắp xếp"><option value="new">Mới nhất</option><option value="low">Giá thấp trước</option><option value="high">Giá cao trước</option><option value="big">Rộng nhất</option><option value="ppm">Giá/m² tốt nhất</option></select></label>
       </div>
@@ -108,6 +114,10 @@
       <button id="mode"></button>
     </div>
     <p id="status" role="status"></p>
+    <div id="map-wrap" class="map-wrap" hidden>
+      <div id="map" class="map" role="region" aria-label="Bản đồ căn hộ"></div>
+      <div class="map-legend"><span><i class="pin-dot"></i>Theo dự án</span><span><i class="pin-dot approx"></i>Gần đúng theo đường / phường</span><span id="map-note"></span></div>
+    </div>
     <div id="results" class="grid"></div>
     <div id="sources" class="sources" hidden></div>
   </section>

@@ -4,6 +4,7 @@ import json
 import re
 import time
 import unicodedata
+from pathlib import Path
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from urllib.error import HTTPError
@@ -32,6 +33,28 @@ def eligible(item):
     area = AREA.search(fold(str(item.get('address','')) + ' ' + item.get('title','')))
     apartment = any(x in fold(item.get('title','') + ' ' + item.get('kind','')) for x in ['can ho','chung cu','apartment','condominium'])
     return bool(area and apartment and MIN_PRICE <= item.get('price',0) <= MAX_PRICE and item.get('monthly',False))
+
+GEO_RANK = {'project':0,'near':1,'street':2,'ward':3}
+_places = None
+
+def places():
+    """geo.json (built by geocode.py from OpenStreetMap), most specific aliases first."""
+    global _places
+    if _places is None:
+        try: raw = json.loads((Path(__file__).parent/'geo.json').read_text('utf-8'))['places']
+        except (FileNotFoundError, ValueError, KeyError): raw = []
+        # 'thao dien' cũng khớp 'thaodien', 'thao-dien'; "d lusso" khớp "d’lusso".
+        _places = sorted(((re.compile(r'\b'+alias.replace(' ',"[\\s'’-]*")+r'\b'), p) for p in raw for alias in p['aliases']),
+                         key=lambda x:(GEO_RANK.get(x[1]['kind'],9), -len(x[0].pattern)))
+    return _places
+
+def locate(item):
+    """Approximate map position from project / street / ward names; None when only 'Quận 2' is known."""
+    text = fold(item.get('title','') + ' ' + str(item.get('address','')))
+    for pattern, place in places():
+        if pattern.search(text):
+            return {'lat':place['lat'],'lon':place['lon'],'place':place['name'],'level':place['kind']}
+    return None
 
 def parse_price(text):
     """'9,5 triệu' / '12 tr/tháng' / '8.500.000 đ' -> VND; None when absent, negotiable or not VND."""
