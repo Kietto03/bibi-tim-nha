@@ -20,7 +20,7 @@ def build(crawl=False):
     js = js.replace("fetch('/api/listings')", "fetch(window.BIBI_STATIC?'./listings.json':'/api/listings')")
     js = js.replace("fetch('/api/sources')", "fetch(window.BIBI_STATIC?'./sources.json':'/api/sources')")
     js = js.replace("$('#refresh').onclick=async()=>{", "$('#refresh').onclick=async()=>{if(window.BIBI_STATIC){demo=false;await load();return;}")
-    js = js.replace("'↻ Cập nhật tin thật'", "(window.BIBI_STATIC?'↻ Tải lại tin':'↻ Cập nhật tin thật')")
+    js = js.replace("'Cập nhật tin'", "(window.BIBI_STATIC?'Tải lại tin':'Cập nhật tin')")
     js = js.replace("'Chưa kết nối được máy chủ. Kiểm tra python server.py rồi tải lại trang.'", "(window.BIBI_STATIC?'Chưa tải được dữ liệu. Hãy tải lại trang.':'Chưa kết nối được máy chủ. Kiểm tra python server.py rồi tải lại trang.')")
     js = js.replace("'Chưa có tin thật phù hợp. Bấm “Cập nhật tin thật” rồi xem trạng thái nguồn.'", "(window.BIBI_STATIC?'Chưa có tin thật phù hợp. Xem trạng thái nguồn; dữ liệu được cập nhật bởi GitHub Actions.':'Chưa có tin thật phù hợp. Bấm “Cập nhật tin thật” rồi xem trạng thái nguồn.')")
     (target / 'app.js').write_text(js, 'utf-8')
