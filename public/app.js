@@ -1,29 +1,43 @@
 const $=s=>document.querySelector(s);
 const demos=[['Masteri Thảo Điền','Thảo Điền',10.5,2,65],['The Sun Avenue','An Phú',11,2,72],['Căn hộ An Phú xanh mát','An Phú',9.5,1,52],['Căn hộ 1PN Bình Trưng','Bình Trưng',8.5,1,48],['Căn hộ sáng thoáng Thủ Thiêm','Thủ Thiêm',11.5,2,68],['Căn hộ 2PN Thạnh Mỹ Lợi','Thạnh Mỹ Lợi',10,2,60]].map((x,i)=>({id:'demo-'+i,title:x[0],address:x[1]+', Quận 2',price:x[2]*1e6,bedrooms:x[3],area:x[4],source:'Dữ liệu minh họa',image:'/assets/room-'+i%3+'.svg',demo:true}));
 // Crawler lưu 5–25 triệu; Bibi tìm 8–12 triệu nên đó là chip mặc định (giữ đúng ">8 và <12").
-const PRICES=[{id:'lt8',label:'Dưới 8 tr',test:p=>p<=8e6},{id:'8-12',label:'8 – 12 tr',test:p=>p>8e6&&p<12e6},{id:'12-15',label:'12 – 15 tr',test:p=>p>=12e6&&p<15e6},{id:'15-20',label:'15 – 20 tr',test:p=>p>=15e6&&p<20e6},{id:'gt20',label:'Trên 20 tr',test:p=>p>=20e6},{id:'all',label:'Tất cả',test:()=>true}];
-const DEFAULTS={price:'8-12',area:'',source:'',hasImage:false,fresh:false,ward:'',beds:'',sort:'new',layout:'grid'};
+const PRICES=[{id:'lt8',label:'Dưới 8 tr',test:p=>p<=8e6},{id:'8-12',label:'8 – 12 tr',test:p=>p>8e6&&p<12e6},{id:'12-13',label:'12 – 13 tr',test:p=>p>=12e6&&p<=13e6},{id:'12-15',label:'12 – 15 tr',test:p=>p>=12e6&&p<15e6},{id:'15-20',label:'15 – 20 tr',test:p=>p>=15e6&&p<20e6},{id:'gt20',label:'Trên 20 tr',test:p=>p>=20e6},{id:'all',label:'Tất cả',test:()=>true}];
+const DEFAULTS={price:'8-12',area:'',source:'',hasImage:false,age:'',ward:'',beds:'',sort:'new',layout:'grid'};
 let saved;try{saved=new Set(JSON.parse(localStorage.getItem('bibi-saved')||'[]'))}catch{saved=new Set()}
+let manual;try{manual=JSON.parse(localStorage.getItem('bibi-manual')||'[]')}catch{manual=[]}
 let filters;try{filters={...DEFAULTS,...JSON.parse(localStorage.getItem('bibi-filters')||'{}')}}catch{filters={...DEFAULTS}}
 let view='all',demo=true,autoMode=true,popped=null,data={listings:[],sources:[]},configs=[],timer;
 const STATES={ok:'Đã đọc',empty:'Chưa có tin phù hợp',blocked:'Bị chặn',error:'Chưa đọc được'};
 const normalize=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').toLowerCase();
 const price=x=>new Intl.NumberFormat('vi-VN',{maximumFractionDigits:1}).format(x/1e6)+' triệu';
 const svg=(id,cls='icon')=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('class',cls);const u=document.createElementNS('http://www.w3.org/2000/svg','use');u.setAttribute('href','#'+id);s.append(u);return s};
-const fresh=x=>x.firstSeen&&Date.now()-new Date(x.firstSeen)<864e5;
-function syncControls(){$('#ward').value=filters.ward;$('#beds').value=filters.beds;$('#sort').value=filters.sort;$('#area').value=filters.area;$('#has-image').checked=filters.hasImage;$('#fresh').checked=filters.fresh}
+// Ngày đăng theo nguồn (postedAt). Tin không rõ ngày không được coi là mới: lúc Bibi thấy lần đầu không phải ngày đăng.
+const age=x=>x.postedAt?(Date.now()-new Date(x.postedAt))/864e5:Infinity;
+const fresh=x=>age(x)<1;
+const byNewest=(a,b)=>(!!b.manual-!!a.manual)||(!!b.postedAt-!!a.postedAt)||String(b.postedAt||b.firstSeen||'').localeCompare(String(a.postedAt||a.firstSeen||''));
+function ago(iso){
+ if(iso.length===10){ // chỉ có ngày (nguồn ghi "Hôm nay", "3 ngày trước", "29/10/2026"): đếm theo lịch giờ Việt Nam
+  const d=Math.round((Date.parse(new Date(Date.now()+7*36e5).toISOString().slice(0,10))-Date.parse(iso))/864e5);
+  if(d<=0)return 'hôm nay';if(d===1)return 'hôm qua';if(d<30)return d+' ngày trước';if(d<365)return Math.round(d/30)+' tháng trước';return new Date(iso).toLocaleDateString('vi-VN');
+ }
+ const d=(Date.now()-new Date(iso))/864e5;
+ if(d<1/24)return 'vừa xong';if(d<1)return Math.round(d*24)+' giờ trước';if(d<2)return 'hôm qua';
+ if(d<30)return Math.round(d)+' ngày trước';if(d<365)return Math.round(d/30)+' tháng trước';return new Date(iso).toLocaleDateString('vi-VN');
+}
+const postedLabel=x=>x.manual?'Bibi dán '+ago(x.firstSeen):x.postedAt?'Đăng '+ago(x.postedAt):'Chưa rõ ngày đăng';
+function syncControls(){$('#ward').value=filters.ward;$('#beds').value=filters.beds;$('#sort').value=filters.sort;$('#area').value=filters.area;$('#has-image').checked=filters.hasImage;$('#age').value=filters.age}
 function store(){try{localStorage.setItem('bibi-filters',JSON.stringify(filters))}catch{}}
 // Mọi bộ lọc trừ giá; giá tách riêng để đếm số căn trên từng chip.
 function baseRows(){
  const q=normalize($('#query').value),[amin,amax]=(filters.area||'0-1e9').split('-').map(Number);
- return (demo?demos:data.listings).filter(x=>view!=='saved'||saved.has(x.id)).filter(x=>normalize(x.title+' '+x.address).includes(q))
+ return (demo?demos:[...manual,...data.listings]).filter(x=>view!=='saved'||saved.has(x.id)).filter(x=>normalize(x.title+' '+x.address).includes(q))
   .filter(x=>!filters.ward||normalize(x.title+' '+x.address).includes(normalize(filters.ward))).filter(x=>!filters.beds||Number(x.bedrooms)===Number(filters.beds))
   .filter(x=>view==='saved'||!filters.area||(x.area>=amin&&x.area<amax)).filter(x=>view==='saved'||!filters.source||x.source===filters.source)
-  .filter(x=>view==='saved'||!filters.hasImage||(x.image&&!x.demo)).filter(x=>view==='saved'||!filters.fresh||fresh(x));
+  .filter(x=>view==='saved'||!filters.hasImage||(x.image&&!x.demo)).filter(x=>view==='saved'||!filters.age||x.manual||age(x)<=Number(filters.age));
 }
 function renderFilters(base){
  $('#price-chips').replaceChildren(...PRICES.map(r=>{const b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed',filters.price===r.id);const n=document.createElement('small');n.textContent=base.filter(x=>r.test(x.price)).length;b.append(r.label,n);b.onclick=()=>{filters.price=r.id;store();render()};return b}));
- const names=[...new Set(data.listings.map(x=>x.source))].sort();
+ const names=[...new Set([...manual,...data.listings].map(x=>x.source))].sort();
  if($('#source').options.length-1!==names.length){$('#source').replaceChildren(new Option('Tất cả nguồn',''),...names.map(n=>new Option(n,n)))}
  $('#source').value=names.includes(filters.source)?filters.source:'';$('#source').disabled=demo;
  $('#reset').hidden=JSON.stringify({...filters,sort:'new',layout:'grid'})===JSON.stringify(DEFAULTS)&&!$('#query').value;
@@ -50,7 +64,7 @@ function popup(x){
  heart.onclick=()=>{saved.has(x.id)?saved.delete(x.id):saved.add(x.id);try{localStorage.setItem('bibi-saved',JSON.stringify([...saved]))}catch{}sync();$('#saved-count').textContent=saved.size;$('#hero-saved').textContent=saved.size};
  row.append(heart);
  try{const u=new URL(x.url);if(!['https:','http:'].includes(u.protocol))throw Error();const a=document.createElement('a');a.className='view';a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.append('Xem tin ',svg('i-arrow'));row.append(a)}catch{}
- const src=document.createElement('small');src.textContent=x.source;
+ const src=document.createElement('small');src.textContent=x.source+' · '+postedLabel(x);
  box.append(p,h,where,src,row);return box;
 }
 async function renderMap(rows){
@@ -79,10 +93,10 @@ function render(){
  const base=baseRows();renderFilters(base);
  let rows=view==='saved'?base:base.filter(x=>range.test(x.price));
  const key={low:(a,b)=>a.price-b.price,high:(a,b)=>b.price-a.price,big:(a,b)=>(b.area||0)-(a.area||0),ppm:(a,b)=>(a.area?a.price/a.area:1e12)-(b.area?b.price/b.area:1e12)}[filters.sort];
- rows.sort(key||((a,b)=>String(b.firstSeen||b.seenAt||'').localeCompare(String(a.firstSeen||a.seenAt||''))));
+ rows.sort(key||byNewest);
  $('#summary').textContent=view==='sources'?`${configs.length} nguồn được cấu hình · Thu thập từ trang công khai`:`${rows.length} căn hộ ${demo?'minh họa':'phù hợp'} · Quận 2${view==='saved'?'':' · '+(range.id==='all'?'5 – 25 triệu':range.label.replace('tr','triệu'))+'/tháng'}`;
  $('#results').replaceChildren();
- for(const x of rows){const card=$('#card').content.cloneNode(true);const el=s=>card.querySelector(s);el('h3').textContent=x.title;el('.location span').textContent=x.address;el('.beds span').textContent=x.bedrooms?x.bedrooms+' phòng ngủ':'Chưa rõ';el('.area span').textContent=x.area?x.area+' m²':'Chưa rõ';el('.price strong').textContent=price(x.price);el('.badge').textContent=x.demo?'Minh họa':fresh(x)?'Mới nè!':'Tin thật';el('img').src=x.image||'/assets/room-0.svg';el('img').alt=x.demo?'Phối cảnh căn hộ minh họa':x.title;el('img').onerror=e=>{e.target.onerror=null;e.target.src='/assets/room-0.svg';e.target.alt='Hình thay thế minh họa';};el('.source-line').textContent=x.source+(x.seenAt?' · Bibi thấy '+new Date(x.firstSeen||x.seenAt).toLocaleDateString('vi-VN'):' · Không phải tin thật');const link=el('.view');if(x.demo){link.querySelector('span').textContent='Minh họa';link.removeAttribute('target')}else{try{const u=new URL(x.url);if(!['https:','http:'].includes(u.protocol))throw Error();link.href=u.href}catch{link.remove()}}const heart=el('.heart');heart.setAttribute('aria-pressed',saved.has(x.id));if(popped===x.id)heart.classList.add('pop');heart.setAttribute('aria-label',(saved.has(x.id)?'Bỏ lưu ':'Lưu ')+x.title);heart.onclick=()=>{saved.has(x.id)?saved.delete(x.id):saved.add(x.id);popped=saved.has(x.id)?x.id:null;try{localStorage.setItem('bibi-saved',JSON.stringify([...saved]))}catch{}render()};$('#results').append(card)}
+ for(const x of rows){const card=$('#card').content.cloneNode(true);const el=s=>card.querySelector(s);el('h3').textContent=x.title;el('.location span').textContent=x.address;el('.beds span').textContent=x.bedrooms?x.bedrooms+' phòng ngủ':'Chưa rõ';el('.area span').textContent=x.area?x.area+' m²':'Chưa rõ';el('.price strong').textContent=price(x.price);el('.badge').textContent=x.demo?'Minh họa':x.manual?'Tự thêm':fresh(x)?'Mới nè!':'Tin thật';el('img').src=x.image||'/assets/room-0.svg';el('img').alt=x.demo?'Phối cảnh căn hộ minh họa':x.title;el('img').onerror=e=>{e.target.onerror=null;e.target.src='/assets/room-0.svg';e.target.alt='Hình thay thế minh họa';};el('.source-line').textContent=x.source+(x.demo?' · Không phải tin thật':' · '+postedLabel(x));if(x.postedAt)el('.source-line').title='Ngày đăng theo nguồn: '+(x.postedAt.length===10?new Date(x.postedAt).toLocaleDateString('vi-VN'):new Date(x.postedAt).toLocaleString('vi-VN'));const link=el('.view');if(x.demo){link.querySelector('span').textContent='Minh họa';link.removeAttribute('target')}else{try{const u=new URL(x.url);if(!['https:','http:'].includes(u.protocol))throw Error();link.href=u.href}catch{link.remove()}}const heart=el('.heart');heart.setAttribute('aria-pressed',saved.has(x.id));if(popped===x.id)heart.classList.add('pop');heart.setAttribute('aria-label',(saved.has(x.id)?'Bỏ lưu ':'Lưu ')+x.title);heart.onclick=()=>{saved.has(x.id)?saved.delete(x.id):saved.add(x.id);popped=saved.has(x.id)?x.id:null;try{localStorage.setItem('bibi-saved',JSON.stringify([...saved]))}catch{}render()};$('#results').append(card)}
  const showMap=filters.layout==='map'&&view!=='sources';
  document.querySelectorAll('[data-layout]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.layout===filters.layout));
  $('#map-wrap').hidden=!showMap;if(showMap){$('#results').hidden=true;renderMap(rows)}
@@ -92,12 +106,39 @@ function render(){
 async function load(){try{const res=await fetch('/api/listings',{cache:'no-store'});if(!res.ok)throw Error();data=await res.json();if(autoMode)demo=!data.listings.length;$('#status').textContent=data.running?'Bibi chờ xíu, đang ghé các nguồn tin… Vẫn lọc và lưu căn hộ được nha.':data.updatedAt?'Lần thu thập gần nhất: '+new Date(data.updatedAt).toLocaleString('vi-VN')+' · Thời điểm thu thập không phải ngày đăng tin.':'';$('#refresh').disabled=data.running;$('#refresh-label').textContent=data.running?'Đang tìm tin…':'Cập nhật tin';render();clearTimeout(timer);if(data.running)timer=setTimeout(load,2500)}catch{$('#status').textContent='Chưa kết nối được máy chủ. Kiểm tra python server.py rồi tải lại trang.';$('#refresh').disabled=false}}
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{view=b.dataset.view;render()});
 $('#query').addEventListener('input',render);
-[['ward','ward'],['beds','beds'],['sort','sort'],['area','area'],['source','source']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{filters[k]=e.target.value;store();render()}));
-[['has-image','hasImage'],['fresh','fresh']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{filters[k]=e.target.checked;store();render()}));
+[['ward','ward'],['beds','beds'],['sort','sort'],['area','area'],['source','source'],['age','age']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{filters[k]=e.target.value;store();render()}));
+[['has-image','hasImage']].forEach(([id,k])=>$('#'+id).addEventListener('change',e=>{filters[k]=e.target.checked;store();render()}));
 document.querySelectorAll('[data-layout]').forEach(b=>b.onclick=()=>{filters.layout=b.dataset.layout;store();render()});
 $('#reset').onclick=()=>{filters={...DEFAULTS,layout:filters.layout};$('#query').value='';store();syncControls();render()};
 $('#search-button').onclick=()=>{view='all';render();$('.content').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})};$('#query').addEventListener('keydown',e=>{if(e.key==='Enter')$('#search-button').click()});$('#mode').onclick=()=>{autoMode=false;demo=!demo;render()};$('#refresh').onclick=async()=>{autoMode=false;demo=false;$('#refresh').disabled=true;try{const res=await fetch('/api/crawl',{method:'POST'});if(!res.ok)throw Error();await load()}catch{$('#status').textContent='Không bắt đầu được thu thập. Thử lại sau nhé.';$('#refresh').disabled=false}};
 function applyTheme(){const t=document.documentElement.dataset.theme==='dark'?'dark':'light';document.documentElement.dataset.effective=t;$('#theme').setAttribute('aria-label',t==='dark'?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối');document.querySelector('meta[name=theme-color]').content=t==='dark'?'#1f1119':'#fff1f6'}
 $('#theme').onclick=()=>{const t=document.documentElement.dataset.effective==='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem('bibi-theme',t)}catch{}applyTheme()};applyTheme();
+// Dán tin Facebook/Zalo: Facebook không cho bot đọc nhóm/trang, nên Bibi dán tay; tin chỉ lưu trên trình duyệt này.
+const WARDS=['Thảo Điền','An Phú','An Khánh','Bình An','Bình Khánh','Bình Trưng Đông','Bình Trưng Tây','Bình Trưng','Thạnh Mỹ Lợi','Cát Lái','Thủ Thiêm','An Lợi Đông'];
+function parsePrice(t){
+ let m=t.match(/(\d{1,3}(?:[.,]\d{3}){2,})\s*(?:d|vnd|dong)\b/);if(m)return Number(m[1].replace(/[.,]/g,''));
+ m=t.match(/(\d+(?:[.,]\d+)?)\s*(?:trieu|tr|cu)(?:\s*(\d{1,3})(?!\s*(?:m|pn|phong|wc)))?/);if(!m)return null;
+ return (parseFloat(m[1].replace(',','.'))+(m[2]?Number(m[2])/10**m[2].length:0))*1e6; // 11tr5 -> 11,5 triệu; 8 triệu 500 -> 8,5
+}
+function parsePost(text,url){
+ const t=normalize(text),num=re=>{const m=t.match(re);return m?parseFloat(m[1].replace(',','.')):null};
+ const ward=WARDS.find(w=>t.includes(normalize(w))),host=(()=>{try{return new URL(url).hostname}catch{return ''}})();
+ return {id:'manual-'+Date.now(),manual:true,title:text.trim().split('\n')[0].slice(0,110),address:(ward?ward+', ':'')+'Quận 2',price:parsePrice(t),area:num(/(\d+(?:[.,]\d+)?)\s*m\s?(?:2|²)/),bedrooms:num(/(\d)\s*(?:pn|phong ngu|br\b|bedroom)/),
+  source:/facebook|fb\.com/.test(host)?'Facebook':/zalo/.test(host)?'Zalo':'Tự thêm',url:/^https?:$/.test((()=>{try{return new URL(url).protocol}catch{return ''}})())?url:'',image:'',postedAt:null,firstSeen:new Date().toISOString(),seenAt:new Date().toISOString()};
+}
+function saveManual(){try{localStorage.setItem('bibi-manual',JSON.stringify(manual))}catch{}renderManual();render()}
+function renderManual(){
+ $('#manual-count').textContent=manual.length?`· ${manual.length} tin đã dán`:'';
+ $('#manual-list').replaceChildren(...manual.map(x=>{const li=document.createElement('li');const s=document.createElement('span');s.textContent=`${price(x.price)} · ${x.title}`;const b=document.createElement('button');b.className='reset';b.textContent='Xóa';b.setAttribute('aria-label','Xóa tin '+x.title);b.onclick=()=>{manual=manual.filter(y=>y.id!==x.id);saveManual()};li.append(s,b);return li}));
+}
+$('#paste-add').onclick=()=>{
+ const text=$('#paste-text').value.trim();if(!text){$('#paste-msg').textContent='Bibi dán nội dung bài đăng vào ô trên nha.';return}
+ const item=parsePost(text,$('#paste-url').value.trim());
+ if(!item.price){$('#paste-msg').textContent='Chưa thấy giá thuê; thêm chữ kiểu “11tr5” hoặc “11,5 triệu” nha.';return}
+ manual.unshift(item);$('#paste-text').value='';$('#paste-url').value='';
+ $('#paste-msg').textContent=`Đã thêm: ${price(item.price)}${item.area?' · '+item.area+' m²':''}${item.bedrooms?' · '+item.bedrooms+' PN':''} · ${item.address}`;
+ autoMode=false;demo=false;filters.price='all';store();saveManual();
+};
+renderManual();
 // Dữ liệu được crawl định kỳ; trang tự tải lại tin mới mà không cần F5.
 syncControls();render();fetch('/api/sources').then(r=>r.json()).then(x=>{configs=x;render()}).catch(()=>{});load();setInterval(()=>{if(!document.hidden)load()},5*60*1000);

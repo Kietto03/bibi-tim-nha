@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 import threading
@@ -7,7 +8,7 @@ from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
-from crawler import crawl_source, dedupe, locate
+from crawler import crawl_source, dedupe, eligible, locate
 
 ROOT=Path(__file__).parent
 LOCK=threading.Lock()
@@ -20,33 +21,36 @@ def load():
 def merge(previous,fresh,now):
     """Keep firstSeen across runs; listings beyond the scanned pages stay until unseen for STALE_DAYS."""
     old={x['id']:x for x in previous}
-    merged=[{**x,'firstSeen':old.get(x['id'],{}).get('firstSeen') or x['seenAt']} for x in fresh]
+    merged=[{**x,'firstSeen':old.get(x['id'],{}).get('firstSeen') or x['seenAt'],'postedAt':x.get('postedAt') or old.get(x['id'],{}).get('postedAt')} for x in fresh]
     ids={x['id'] for x in merged}
     for x in previous:
         if x['id'] in ids: continue
         age=(now-datetime.fromisoformat(x.get('seenAt') or now.isoformat())).days
-        if age<STALE_DAYS: merged.append(x)
+        if age<STALE_DAYS and eligible(x): merged.append(x)  # re-check: filter rules may have tightened
     return [{**x,"geo":locate(x)} for x in dedupe(merged)]
-def refresh():
+def refresh(deep=None):
+    """deep=None reads CRAWL_DEEP (default on); shallow runs only read each source's first pages."""
     global running
+    if deep is None: deep=os.environ.get('CRAWL_DEEP','1')!='0'
     try:
         configs=json.loads((ROOT/'sources.json').read_text('utf-8'))
-        with ThreadPoolExecutor(max_workers=len(configs)) as pool: results=list(pool.map(crawl_source,configs))
+        with ThreadPoolExecutor(max_workers=len(configs)) as pool: results=list(pool.map(lambda c:crawl_source(c,deep),configs))
         previous=load(); now=datetime.now(timezone.utc)
-        data={'listings':merge(previous['listings'],[x for items,_ in results for x in items],now),'sources':[s for _,s in results],'updatedAt':now.isoformat()}
+        data={'listings':merge(previous['listings'],[x for items,_ in results for x in items],now),'sources':[s for _,s in results],'updatedAt':now.isoformat(),'deep':deep}
         STATE.parent.mkdir(exist_ok=True); temp=STATE.with_suffix('.tmp'); temp.write_text(json.dumps(data,ensure_ascii=False),'utf-8'); temp.replace(STATE)
     finally:
         with LOCK: running=False
-def start_refresh():
+def start_refresh(deep=True):
     global running
     with LOCK:
         if running: return False
         running=True
-    threading.Thread(target=refresh,daemon=True).start(); return True
+    threading.Thread(target=refresh,args=(deep,),daemon=True).start(); return True
 def schedule(minutes):
     def loop():
-        while True:
-            start_refresh(); time.sleep(minutes*60)
+        # Lần đầu và mỗi lượt thứ 6 quét sâu; còn lại chỉ quét các trang đầu (tin mới nằm ở đó).
+        for n in itertools.count():
+            start_refresh(n%6==0); time.sleep(minutes*60)
     threading.Thread(target=loop,daemon=True).start()
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self,*a,**kw): super().__init__(*a,directory=str(ROOT/'public'),**kw)

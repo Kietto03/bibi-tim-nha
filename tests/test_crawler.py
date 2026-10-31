@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from unittest import mock
 from urllib.error import HTTPError
-from crawler import eligible,extract,dedupe,parse_price,page_urls,robots_for,locate
+from crawler import eligible,extract,dedupe,parse_price,page_urls,robots_for,locate,parse_posted,VN
 from server import merge
 
 CARDS='''<ul><li><div class="img"><img data-src="https://cdn.example.com/a.jpg"></div>
@@ -23,6 +23,8 @@ class CrawlerTests(unittest.TestCase):
     def test_reject_wrong_district_and_period(self):
         i=self.item();i.update(title='Cho thuê căn hộ',address='Quận 12');self.assertFalse(eligible(i))
         i=self.item();i.update(title='Cho thuê căn hộ',address='An Phú Đông, Quận 12');self.assertFalse(eligible(i))
+        i=self.item();i.update(title='JAMILA KHANG ĐIỀN - căn hộ 2PN 10 triệu',address='Quận 2');self.assertFalse(eligible(i))
+        i=self.item();i.update(title='Căn hộ Q2 gần Quận 1, view sông',address='Quận 2');self.assertTrue(eligible(i))
         i=self.item();i['monthly']=False;self.assertFalse(eligible(i))
         i=self.item();i.update(title='Nhà phố Quận 2',kind='House');self.assertFalse(eligible(i))
     def test_jsonld_currency_period_and_malformed(self):
@@ -57,6 +59,13 @@ class CrawlerTests(unittest.TestCase):
         for code,allowed in [(404,True),(406,True),(403,False),(503,False)]:
             with mock.patch('crawler.fetch',side_effect=HTTPError('u',code,'x',{},None)):
                 self.assertEqual(robots_for('https://x.vn').can_fetch('BibiHomeBot/1.0','https://x.vn/a'),allowed,code)
+    def test_parse_posted(self):
+        now=datetime(2026,10,31,12,0,tzinfo=VN)
+        for text,want in [('2 giờ trước','2026-10-31T10:00+07:00'),('Hôm qua','2026-10-30'),
+                          ('17/9/2026, lúc: 11 giờ 3 phút','2026-09-17T11:03+07:00'),('Ngày đăng: 29/10/2026','2026-10-29'),('Hôm nay','2026-10-31'),('3 ngày trước','2026-10-28'),
+                          ('trống từ 15/11/2026',None),('01/01/2021',None),('Thỏa thuận',None)]:
+            self.assertEqual(parse_posted(text,now),want,text)
+        self.assertIsNone(parse_posted('29/10/2026',now,absolute=False))
     def test_locate_prefers_project_then_ward(self):
         self.assertEqual(locate({'title':'Cho thuê căn hộ Masteri Thảo Điền 2PN'})['level'],'project')
         self.assertEqual(locate({'title':'CĂN HỘ D’LUSSO 1PN'})['place'],"D'Lusso")

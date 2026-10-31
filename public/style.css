@@ -149,6 +149,25 @@ h2 span{text-decoration:underline wavy var(--pink) 3px;text-underline-offset:10p
 #refresh:disabled .icon{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* Dán tin Facebook / Zalo */
+.paste{margin:0 0 24px;border:var(--bw) dashed var(--line);border-radius:20px;background:var(--surface)}
+.paste summary{display:flex;align-items:center;gap:8px;min-height:52px;padding:0 20px;cursor:pointer;font:800 17px/1.2 var(--display);list-style:none}
+.paste summary::-webkit-details-marker{display:none}
+.paste summary::after{content:"+";margin-left:auto;font-size:24px;color:var(--pink-ink)}
+.paste[open] summary::after{content:"–"}
+.paste summary .icon{color:var(--pink-ink);fill:currentColor;width:18px;height:18px}
+.paste summary small{font:700 13px var(--body);color:var(--muted)}
+.paste-body{display:grid;gap:12px;padding:0 20px 20px}
+.paste-body>p{margin:0;font-size:14px;color:var(--muted);font-weight:600}
+.paste-field{display:grid;gap:6px;font-size:13px;font-weight:800;color:var(--pink-ink)}
+.paste-field textarea,.paste-field input{width:100%;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:var(--sunken);color:var(--ink);font:600 15px/1.5 var(--body);resize:vertical}
+.paste-field textarea:focus,.paste-field input:focus{outline:3px dashed var(--pink-ink);outline-offset:2px}
+.paste-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+#paste-msg{font-size:14px;font-weight:700;color:var(--muted)}
+.manual-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.manual-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 6px 6px 14px;border-radius:14px;background:var(--sunken);font-size:14px;font-weight:600}
+.manual-list span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* Danh sách / Bản đồ */
 .layout-toggle{display:inline-flex;padding:3px;gap:3px;border:var(--bw) solid var(--line);border-radius:999px;background:var(--surface);box-shadow:3px 3px 0 var(--shade)}
 .layout-toggle button{min-height:36px;padding:0 14px;border:0;box-shadow:none;background:transparent;font-size:14px;color:var(--muted)}

@@ -87,7 +87,7 @@
       <label class="mini"><span>Diện tích</span><select id="area"><option value="">Mọi diện tích</option><option value="0-40">Dưới 40 m²</option><option value="40-60">40 – 60 m²</option><option value="60-80">60 – 80 m²</option><option value="80-999">Trên 80 m²</option></select></label>
       <label class="mini"><span>Nguồn tin</span><select id="source"><option value="">Tất cả nguồn</option></select></label>
       <label class="toggle"><input type="checkbox" id="has-image"><span>Có ảnh thật</span></label>
-      <label class="toggle"><input type="checkbox" id="fresh"><span>Mới 24 giờ</span></label>
+      <label class="mini"><span>Đăng trong</span><select id="age"><option value="">Mọi lúc</option><option value="1">24 giờ qua</option><option value="7">7 ngày qua</option><option value="30">30 ngày qua</option><option value="90">3 tháng qua</option></select></label>
       <button id="reset" class="reset">Xóa lọc</button>
     </div>
   </section>
@@ -104,7 +104,7 @@
           <button data-layout="map" aria-pressed="false"><svg class="icon"><use href="#i-map"/></svg>Bản đồ</button>
         </div>
         <button id="refresh"><svg class="icon"><use href="#i-refresh"/></svg><span id="refresh-label">Cập nhật tin</span></button>
-        <label class="sort"><span>Xếp theo</span><select id="sort" aria-label="Sắp xếp"><option value="new">Mới nhất</option><option value="low">Giá thấp trước</option><option value="high">Giá cao trước</option><option value="big">Rộng nhất</option><option value="ppm">Giá/m² tốt nhất</option></select></label>
+        <label class="sort"><span>Xếp theo</span><select id="sort" aria-label="Sắp xếp"><option value="new">Mới đăng</option><option value="low">Giá thấp trước</option><option value="high">Giá cao trước</option><option value="big">Rộng nhất</option><option value="ppm">Giá/m² tốt nhất</option></select></label>
       </div>
     </div>
 
@@ -114,6 +114,16 @@
       <button id="mode"></button>
     </div>
     <p id="status" role="status"></p>
+    <details class="paste" id="paste">
+      <summary><svg class="icon"><use href="#i-spark"/></svg>Dán tin từ Facebook / Zalo <small id="manual-count"></small></summary>
+      <div class="paste-body">
+        <p>Bibi copy nội dung bài đăng (và link nếu có) rồi dán vào đây; trang tự đọc giá, diện tích, số phòng và khu vực. Tin chỉ lưu trên trình duyệt này.</p>
+        <label class="paste-field"><span>Nội dung bài đăng</span><textarea id="paste-text" rows="5" placeholder="VD: Cho thuê căn hộ 2PN Masteri Thảo Điền, 68m2, full nội thất, giá 11tr5/tháng…"></textarea></label>
+        <label class="paste-field"><span>Link bài đăng (không bắt buộc)</span><input id="paste-url" type="url" inputmode="url" placeholder="https://www.facebook.com/groups/…"></label>
+        <div class="paste-actions"><button id="paste-add" class="primary">Thêm vào danh sách</button><span id="paste-msg" role="status"></span></div>
+        <ul id="manual-list" class="manual-list"></ul>
+      </div>
+    </details>
     <div id="map-wrap" class="map-wrap" hidden>
       <div id="map" class="map" role="region" aria-label="Bản đồ căn hộ"></div>
       <div class="map-legend"><span><i class="pin-dot"></i>Theo dự án</span><span><i class="pin-dot approx"></i>Gần đúng theo đường / phường</span><span id="map-note"></span></div>

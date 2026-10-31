@@ -21,7 +21,9 @@ python -m unittest discover -s tests -v
 ## Có gì?
 
 - Giao diện hoạt hình hồng kiểu sổ sticker, ảnh Bibi làm nhân vật chính. Mặc định giao diện sáng; nút mặt trời/mặt trăng chuyển sang tối và được nhớ trên trình duyệt.
-- Tìm kiếm không dấu; lọc khu vực, phòng ngủ, khoảng giá (chip có đếm số căn), diện tích, nguồn tin, chỉ tin có ảnh, tin mới 24 giờ; sắp xếp mới nhất, giá, diện tích, giá/m². Bộ lọc và yêu thích lưu trên trình duyệt; tab "Đã thương" luôn hiện đủ căn đã lưu.
+- Tìm kiếm không dấu; lọc khu vực, phòng ngủ, khoảng giá (chip có đếm số căn, gồm 8–12 và 12–13 triệu), diện tích, nguồn tin, chỉ tin có ảnh, đăng trong 24 giờ / 7 / 30 / 90 ngày; sắp xếp mới đăng, giá, diện tích, giá/m².
+- **Ngày đăng** đọc từ nguồn ("2 giờ trước", "Hôm qua", "17/9/2026", `datePosted`); nguồn chỉ ghi ngày thì lưu dạng ngày (`2026-10-31`) để không bịa giờ. Tin không rõ ngày ghi "Chưa rõ ngày đăng" và không được coi là mới. Nhiều nguồn còn giữ tin từ 2024–2025: lọc "Đăng trong" để bỏ tin cũ.
+- **Dán tin Facebook / Zalo**: Facebook không cho bot đọc nhóm/trang (cần đăng nhập, cấm thu thập tự động) nên trang không crawl Facebook. Bibi dán nội dung bài + link; trang tự đọc giá ("11tr5", "8 triệu 500", "8.500.000đ"), diện tích, phòng ngủ, phường. Tin dán chỉ lưu trong trình duyệt đó. Bộ lọc và yêu thích lưu trên trình duyệt; tab "Đã thương" luôn hiện đủ căn đã lưu.
 - Tự hiện **tin thật** khi đã có dữ liệu; chế độ **minh họa** chỉ dùng khi chưa có tin. Trang tự tải lại dữ liệu mỗi 5 phút.
 - API `GET /api/listings`, `GET /api/sources`, `POST /api/crawl`; crawl nền, trạng thái từng nguồn, lưu JSON atomic.
 
@@ -37,9 +39,13 @@ Nguồn cấu hình trong `sources.json` (17 nguồn): Mogi, Mua Bán, Rever, Nh
 
 Chỉ nhận tin giá 5–25 triệu VND theo tháng (`MIN_PRICE`/`MAX_PRICE` trong `crawler.py`) (loại giá theo ngày, theo m², tỷ), loại căn hộ và khu vực Quận 2 cũ (gồm tên phường cũ/mới như Thảo Điền, An Phú, An Khánh, Bình Trưng, Cát Lái, Thủ Thiêm). Chống trùng theo URL chuẩn hoặc tiêu đề + địa chỉ + giá.
 
+Quét **sâu** (tới 40 trang/nguồn, `pages` trong `sources.json`) mỗi 6 giờ và khi push; các lượt còn lại quét **nhanh** 5 trang đầu (`SHALLOW`), nơi tin mới xuất hiện. Biến môi trường `CRAWL_DEEP=0/1`; server local quét sâu ở lượt đầu và mỗi lượt thứ 6.
+
+Tiêu đề nêu quận/dự án ngoài Quận 2 (Khang Điền, Safira, Jamila, Quận 9, Bình Thạnh…) mà không nhắc khu nào của Quận 2 thì bị loại, kể cả khi mô tả có câu "gần Quận 2".
+
 Mỗi lượt crawl gộp với dữ liệu cũ: tin giữ `firstSeen` (lần đầu thấy) và `seenAt` (lần cuối thấy); tin không còn xuất hiện quá 3 ngày bị xóa. Tôn trọng robots.txt (RFC 9309: lỗi 4xx = không giới hạn, 401/403/5xx = không vào), `Crawl-delay` và tối thiểu 2 giây giữa các trang cùng nguồn; mỗi nguồn tối đa khoảng 150 giây; các nguồn chạy song song.
 
-**Giới hạn**: Batdongsan.com.vn và Nhà Tốt trả 403 cho bot nên hiển thị trạng thái "Bị chặn"; Bibi không vượt chặn, không giả trình duyệt, không vượt CAPTCHA hay đăng nhập. Giá thuê căn hộ Quận 2 phần lớn trên 12 triệu; một lượt thường được khoảng 900 tin 5–25 triệu, trong đó khoảng 100 tin 8–12 triệu. Một số nguồn (Alonhadat, i-Batdongsan, 123nhadatviet) đôi khi trả 429 với IP của GitHub Actions; lượt sau sẽ thử lại. Cấu trúc website có thể đổi; khi một nguồn chuyển sang "Chưa có tin phù hợp" lâu ngày, hãy kiểm tra lại `entry`/`page`/`detail`. Tin có thể đã cho thuê dù vẫn còn trên trang nguồn; luôn kiểm tra tin gốc.
+**Giới hạn**: Batdongsan.com.vn và Nhà Tốt trả 403 cho bot nên hiển thị trạng thái "Bị chặn"; Bibi không vượt chặn, không giả trình duyệt, không vượt CAPTCHA hay đăng nhập. Giá thuê căn hộ Quận 2 phần lớn trên 12 triệu; một lượt quét sâu được khoảng 1.850 tin 5–25 triệu, trong đó khoảng 280 tin 8–12 triệu và 180 tin 12–13 triệu. Một số nguồn (Alonhadat, i-Batdongsan, 123nhadatviet) đôi khi trả 429 với IP của GitHub Actions; lượt sau sẽ thử lại. Cấu trúc website có thể đổi; khi một nguồn chuyển sang "Chưa có tin phù hợp" lâu ngày, hãy kiểm tra lại `entry`/`page`/`detail`. Tin có thể đã cho thuê dù vẫn còn trên trang nguồn; luôn kiểm tra tin gốc.
 
 ## Bản đồ
 

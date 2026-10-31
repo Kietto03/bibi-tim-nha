@@ -29,6 +29,9 @@ jobs:
         run: |
           mkdir -p data
           [ -s data/listings.json ] || curl -fsSL "https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/listings.json" -o data/listings.json || rm -f data/listings.json
+      - name: Choose crawl depth (deep every 6 hours, shallow otherwise)
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ] || [ $(( 10#$(date -u +%H) % 6 )) -eq 0 ]; then echo CRAWL_DEEP=1; else echo CRAWL_DEEP=0; fi >> "$GITHUB_ENV"
       - run: python -m unittest discover -s tests -v
       - run: python build_pages.py --crawl
       - run: node --check dist/app.js

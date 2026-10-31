@@ -5,7 +5,7 @@ import re
 import time
 import unicodedata
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from urllib.error import HTTPError
 from urllib.parse import urljoin, urlsplit, urlunsplit
@@ -14,6 +14,7 @@ from urllib.robotparser import RobotFileParser
 
 AGENT = 'BibiHomeBot/1.0'
 BUDGET = 150
+SHALLOW = 5
 VOID = {'area','base','br','col','embed','hr','img','input','link','meta','source','track','wbr'}
 LISTING_TYPES = ('realestatelisting','apartment','residence','accommodation','product','offer','house','singlefamilyresidence')
 
@@ -29,7 +30,13 @@ AREA = re.compile(r'\b(quan\s*2|q\.?\s*2|thao dien|an phu(?! dong)|binh trung|th
 # Lưu rộng hơn khoảng Bibi tìm (8–12 triệu) để web lọc lại được; khoảng mặc định nằm ở app.js.
 MIN_PRICE, MAX_PRICE = 5_000_000, 25_000_000
 
+# Tiêu đề nêu quận khác / dự án ngoài Quận 2 (Khang Điền, Vinhomes Grand Park ở Quận 9...) mà không nhắc Quận 2 thì loại,
+# kể cả khi mô tả có câu kiểu "gần Quận 2".
+ELSEWHERE = re.compile(r'\b(quan\s*(?:[013-9]|1[0-2])|q\.?\s*(?:[013-9]|1[0-2]))\b|\b(phu huu|long truong|truong thanh|phuoc long|tang nhon phu|hiep phu|long thanh my|khang dien|safira|jamila|vinhomes grand park|binh thanh|nha be|go vap|tan binh|phu nhuan)\b')
+
 def eligible(item):
+    title = fold(item.get('title','')).replace('_',' ')
+    if ELSEWHERE.search(title) and not AREA.search(title) and not locate({'title':title}): return False
     area = AREA.search(fold(str(item.get('address','')) + ' ' + item.get('title','')))
     apartment = any(x in fold(item.get('title','') + ' ' + item.get('kind','')) for x in ['can ho','chung cu','apartment','condominium'])
     return bool(area and apartment and MIN_PRICE <= item.get('price',0) <= MAX_PRICE and item.get('monthly',False))
@@ -69,6 +76,54 @@ def parse_price(text):
 def parse_number(pattern, text):
     m = re.search(pattern, fold(text))
     return float(m.group(1).replace(',','.')) if m else None
+
+VN = timezone(timedelta(hours=7))
+UNITS = {'phut':timedelta(minutes=1),'gio':timedelta(hours=1),'ngay':timedelta(days=1),'tuan':timedelta(weeks=1),'thang':timedelta(days=30),'nam':timedelta(days=365)}
+
+def parse_posted(text, now=None, absolute=True):
+    """'2 giờ trước' / 'Hôm qua' / '17/9/2026, lúc: 11 giờ 3 phút' / '2026-10-31' -> ISO in UTC+7, or None.
+    Day-precision sources ('Hôm nay', '3 ngày trước', '29/10/2026') give a date only ('2026-10-29'), so the page
+    never shows a made-up hour. Absolute dates older than 3 years (or in the future) are ignored: cards also show
+    build years, move-in dates..."""
+    now = (now or datetime.now(VN)).astimezone(VN); t = fold(text)
+    m = re.search(r'(\d+)\s*(phut|gio|ngay|tuan|thang|nam)\s*truoc', t)
+    if m:
+        when = now - int(m.group(1))*UNITS[m.group(2)]
+        return when.isoformat(timespec='minutes') if m.group(2) in ('phut','gio') else when.date().isoformat()
+    if 'vua xong' in t: return now.isoformat(timespec='minutes')
+    if 'hom nay' in t: return now.date().isoformat()
+    if 'hom qua' in t: return (now - timedelta(days=1)).date().isoformat()
+    if not absolute: return None
+    m = re.search(r'(\d{4})-(\d{2})-(\d{2})(?:[t ](\d{2}):(\d{2}))?', t) or re.search(r'(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})', t)
+    if not m: return None
+    timed = False
+    try:
+        if len(m.group(1)) == 4:
+            timed = bool(m.group(4))
+            when = datetime(int(m.group(1)),int(m.group(2)),int(m.group(3)),int(m.group(4) or 12),int(m.group(5) or 0),tzinfo=VN)
+        else:
+            when = datetime(int(m.group(3)),int(m.group(2)),int(m.group(1)),12,tzinfo=VN)
+            clock = re.search(r'(\d{1,2})\s*(?:gio|:|h)\s*(\d{1,2})', t[m.end():m.end()+30]) or re.search(r'(\d{1,2}):(\d{2})', t[max(0,m.start()-8):m.start()])
+            if clock and int(clock.group(1)) < 24 and int(clock.group(2)) < 60:
+                when = when.replace(hour=int(clock.group(1)),minute=int(clock.group(2))); timed = True
+    except ValueError: return None
+    if not now - timedelta(days=3*365) <= when <= now + timedelta(hours=12): return None
+    return when.isoformat(timespec='minutes') if timed else when.date().isoformat()
+
+def posted_in(node):
+    """Prefer an element that looks like a date label; fall back to relative phrases anywhere in the card."""
+    for n in node.iter():
+        cls = n.classes()
+        if re.search(r'date|time|created|publish|posted|ngay-dang', cls) and not re.search(r'selling|rating|deadline', cls):
+            found = parse_posted(n.attrs.get('datetime') or n.attrs.get('content') or n.text())
+            if found: return found
+    for n in node.iter():  # an element holding nothing but a date, e.g. <span>17/09/2026</span>
+        if re.fullmatch(r'\s*(\d{1,2}:\d{2}\s*)?\d{1,2}/\d{1,2}/\d{4}(,?\s*\d{1,2}:\d{2})?\s*', n.text() or 'x'):
+            found = parse_posted(n.text())
+            if found: return found
+    text = node.text()
+    m = re.search(r'(?:ngay dang|dang ngay|cap nhat)\s*:?\s*(.{0,40})', fold(text))
+    return parse_posted(text, absolute=False) or (parse_posted(m.group(1)) if m else None)
 
 class Node:
     __slots__ = ('tag','attrs','children','parent')
@@ -128,8 +183,8 @@ def image_of(node, base):
                 if url.startswith('https://'): return url
     return ''
 
-def make_item(url, source, title, address, kind, price, monthly, image, area, bedrooms):
-    return {'id':hashlib.sha256(canonical(url).encode()).hexdigest()[:16],'title':re.sub(r'\s+',' ',str(title)).strip(),'address':re.sub(r'\s+',' ',str(address)).strip(),'kind':str(kind),
+def make_item(url, source, title, address, kind, price, monthly, image, area, bedrooms, posted=None):
+    return {'postedAt':posted,'id':hashlib.sha256(canonical(url).encode()).hexdigest()[:16],'title':re.sub(r'\s+',' ',str(title)).strip(),'address':re.sub(r'\s+',' ',str(address)).strip(),'kind':str(kind),
             'price':price,'monthly':monthly,'image':image,'url':url,'source':source,'area':area,'bedrooms':bedrooms,'seenAt':datetime.now(timezone.utc).isoformat()}
 
 def from_jsonld(page, url, source):
@@ -156,7 +211,7 @@ def from_jsonld(page, url, source):
             target=urljoin(url, str(obj.get('url') or offers.get('url') or url))
             if urlsplit(target).netloc != urlsplit(url).netloc: continue
             area=obj.get('floorSize',{}).get('value') if isinstance(obj.get('floorSize'),dict) else None
-            results.append(make_item(target,source,title,address,obj.get('@type',''),price,monthly,image if isinstance(image,str) and image.startswith('https://') else '',area,obj.get('numberOfBedrooms')))
+            results.append(make_item(target,source,title,address,obj.get('@type',''),price,monthly,image if isinstance(image,str) and image.startswith('https://') else '',area,obj.get('numberOfBedrooms'),parse_posted(str(obj.get('datePosted',''))) if obj.get('datePosted') else None))
     return results
 
 def from_microdata(page, url, source, config):
@@ -183,8 +238,10 @@ def from_microdata(page, url, source, config):
         title=props['name'].text() if 'name' in props else ''
         price_text=fold(price_node.parent.text() if price_node is not None and price_node.parent else text)
         monthly=bool(re.search(r'thang|month',price_text)) or (config.get('rent') and not re.search(r'/\s*(ngay|dem|m2)',price_text))
+        dated=props.get('datePosted')
+        posted=parse_posted(dated.attrs.get('datetime') or dated.attrs.get('content') or dated.text()) if dated is not None else None
         results.append(make_item(target,source,title,address,config.get('kind',''),price or 0,bool(monthly),image_of(node,url),
-                                 parse_number(r'(\d+(?:[.,]\d+)?)\s*m\s?(?:2|²)',text),parse_number(r'(\d+)\s*(?:pn|phong ngu)\b',text)))
+                                 parse_number(r'(\d+(?:[.,]\d+)?)\s*m\s?(?:2|²)',text),parse_number(r'(\d+)\s*(?:pn|phong ngu)\b',text),posted or posted_in(node)))
     return results
 
 def from_cards(page, url, source, config):
@@ -214,7 +271,7 @@ def from_cards(page, url, source, config):
         # No address element: label with the source's area only when the card itself mentions it.
         address=' '.join(n.text() for n in card.iter() if re.search(r'addr|address|location|dia-?chi|khu-?vuc',n.classes())) or (config.get('area','Quận 2') if AREA.search(fold(text)) else '')
         results.append(make_item(target,source,title,address,config.get('kind',''),price,bool(monthly),image_of(card,url),
-                                 parse_number(r'(\d+(?:[.,]\d+)?)\s*m\s?(?:2|²)',text),parse_number(r'(\d+)\s*(?:pn|phong ngu|phong)\b',text)))
+                                 parse_number(r'(\d+(?:[.,]\d+)?)\s*m\s?(?:2|²)',text),parse_number(r'(\d+)\s*(?:pn|phong ngu|phong)\b',text),posted_in(card)))
     return results
 
 def extract(html, url, source, config=None):
@@ -222,7 +279,13 @@ def extract(html, url, source, config=None):
     page=Page(html)
     found=from_jsonld(page,url,source)+from_microdata(page,url,source,config)
     if config.get('detail'): found+=from_cards(page,url,source,config)
-    return [x for x in dedupe(found) if eligible(x)]
+    # Cùng một tin có thể đến từ JSON-LD, microdata và thẻ tin: gộp, lấp các trường còn trống.
+    merged={}
+    for x in found:
+        key=canonical(x['url'])
+        if key in merged: merged[key].update({k:v for k,v in x.items() if v and not merged[key].get(k)})
+        else: merged[key]=dict(x)
+    return [x for x in dedupe(list(merged.values())) if eligible(x)]
 
 def fetch(url):
     with urlopen(Request(url,headers={'User-Agent':AGENT,'Accept':'text/html,application/xhtml+xml,*/*;q=0.8','Accept-Language':'vi,en;q=0.8'}),timeout=20) as response:
@@ -237,11 +300,11 @@ def robots_for(origin):
         robot.parse([] if 400<=error.code<500 and error.code not in (401,403) else ['User-agent: *','Disallow: /'])
     return robot
 
-def page_urls(config):
+def page_urls(config, deep=True):
     entry=urljoin(config['origin'],config['entry'])
     pattern=config.get('page')
     urls=[entry]
-    for n in range(2,config.get('pages',1)+1):
+    for n in range(2,(config.get('pages',1) if deep else min(config.get('pages',1),SHALLOW))+1):
         if not pattern: break
         ext=re.search(r'\.html?$',entry)
         if pattern[0] in '?&': urls.append(entry+pattern.format(n=n))
@@ -249,9 +312,10 @@ def page_urls(config):
         else: urls.append(entry.rstrip('/')+pattern.format(n=n))
     return urls
 
-def crawl_source(config):
+def crawl_source(config, deep=True):
+    """deep: every configured page (a few times a day); otherwise only the first SHALLOW pages, where new posts appear."""
     origin=config['origin']; started=time.monotonic()
-    urls=page_urls(config)
+    urls=page_urls(config,deep)
     status={'id':config['id'],'name':config['name'],'url':urls[0],'count':0,'pages':0,'state':'error','message':''}
     items=[]
     try:
