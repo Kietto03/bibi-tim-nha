@@ -4,7 +4,8 @@ on:
     branches: [main, master]
   workflow_dispatch:
   schedule:
-    - cron: '17 */6 * * *'
+    # GitHub có thể trễ vài phút ở giờ cao điểm; mỗi lượt crawl mất khoảng 1–3 phút.
+    - cron: '*/30 * * * *'
 permissions:
   contents: read
 concurrency:
@@ -24,6 +25,10 @@ jobs:
           path: data/listings.json
           key: bibi-data-${{ github.run_id }}
           restore-keys: bibi-data-
+      - name: Restore previous listings from the live site when cache is empty
+        run: |
+          mkdir -p data
+          [ -s data/listings.json ] || curl -fsSL "https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/listings.json" -o data/listings.json || rm -f data/listings.json
       - run: python -m unittest discover -s tests -v
       - run: python build_pages.py --crawl
       - run: node --check dist/app.js

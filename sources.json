@@ -1,6 +1,11 @@
 [
-  {"id":"batdongsan","name":"Batdongsan.com.vn","origin":"https://batdongsan.com.vn","entry":"/cho-thue-can-ho-chung-cu-quan-2","limit":12},
-  {"id":"nhatot","name":"Nhà Tốt","origin":"https://www.nhatot.com","entry":"/thue-can-ho-chung-cu-quan-2-tp-ho-chi-minh","limit":12},
-  {"id":"mogi","name":"Mogi","origin":"https://mogi.vn","entry":"/ho-chi-minh/quan-2/thue-can-ho-chung-cu","limit":12},
-  {"id":"alonhadat","name":"Alonhadat","origin":"https://alonhadat.com.vn","entry":"/nha-dat/cho-thue/can-ho-chung-cu/2/quan-2.html","limit":12}
+  {"id":"mogi","name":"Mogi","origin":"https://mogi.vn","entry":"/ho-chi-minh/quan-2/thue-can-ho-chung-cu","page":"?cp={n}","pages":15,"detail":"-id\\d+$","rent":true,"kind":"căn hộ"},
+  {"id":"muaban","name":"Mua Bán","origin":"https://muaban.net","entry":"/bat-dong-san/cho-thue-can-ho-chung-cu-quan-2-ho-chi-minh","page":"?page={n}","pages":3,"detail":"-id\\d+$","rent":true,"kind":"căn hộ"},
+  {"id":"rever","name":"Rever","origin":"https://rever.vn","entry":"/s/quan-2/thue/can-ho","page":"?page={n}","pages":15,"detail":"rever\\.vn/thue/[^/]+$","rent":true,"kind":"căn hộ"},
+  {"id":"nhadat24h","name":"Nhà Đất 24h","origin":"https://nhadat24h.net","entry":"/cho-thue-can-ho-chung-cu-quan-2-tp-hcm","page":"/page{n}","pages":10,"detail":"-ID\\d+$","rent":true,"kind":"căn hộ"},
+  {"id":"batdongsanvn","name":"Batdongsan.vn","origin":"https://batdongsan.vn","entry":"/cho-thue-can-ho-chung-cu-quan-2-ho-chi-minh","page":"/p{n}","pages":12,"detail":"-r\\d+$|-\\d{5,}$","rent":true,"kind":"căn hộ"},
+  {"id":"123nhadatviet","name":"123nhadatviet","origin":"https://123nhadatviet.com","entry":"/rao-vat/cho-thue/chung-cu/h133/quan-2.html","page":"/trang--{n}","pages":5,"detail":"-\\d{6,}\\.html$","rent":true,"kind":"căn hộ"},
+  {"id":"alonhadat","name":"Alonhadat","origin":"https://alonhadat.com.vn","entry":"/cho-thue-can-ho-chung-cu/ho-chi-minh","page":"/trang-{n}","pages":15,"rent":true,"kind":"căn hộ"},
+  {"id":"batdongsan","name":"Batdongsan.com.vn","origin":"https://batdongsan.com.vn","entry":"/cho-thue-can-ho-chung-cu-quan-2","pages":1},
+  {"id":"nhatot","name":"Nhà Tốt","origin":"https://www.nhatot.com","entry":"/thue-can-ho-chung-cu-quan-2-tp-ho-chi-minh","pages":1}
 ]

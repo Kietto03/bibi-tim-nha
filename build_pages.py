@@ -17,7 +17,7 @@ def build(crawl=False):
     html = html.replace('<script src="./app.js"', '<script>window.BIBI_STATIC=true;</script><script src="./app.js"')
     (target / 'index.html').write_text(html, 'utf-8')
     js = (target / 'app.js').read_text('utf-8').replace("'/assets/", "'./assets/")
-    js = js.replace("fetch('/api/listings')", "fetch(window.BIBI_STATIC?'./listings.json':'/api/listings')")
+    js = js.replace("fetch('/api/listings'", "fetch(window.BIBI_STATIC?'./listings.json':'/api/listings'")
     js = js.replace("fetch('/api/sources')", "fetch(window.BIBI_STATIC?'./sources.json':'/api/sources')")
     js = js.replace("$('#refresh').onclick=async()=>{", "$('#refresh').onclick=async()=>{if(window.BIBI_STATIC){demo=false;await load();return;}")
     js = js.replace("'Cập nhật tin'", "(window.BIBI_STATIC?'Tải lại tin':'Cập nhật tin')")

@@ -13,14 +13,7 @@
   --chevron:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b1e2c' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   color-scheme:light;
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){
-  --bg:#1f1119;--dots:#2c1824;--surface:#2e1a27;--sunken:#3a2131;
-  --ink:#ffe6f0;--muted:#d4a9bd;--line:#ffe6f0;
-  --pink:#ff8dbb;--pink-ink:#ff9cc5;--pink-soft:#4a2138;--on-pink:#1f1119;
-  --shade:#ff5c9a;
-  --chevron:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffe6f0' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  color-scheme:dark;
-}}
+/* Mặc định light; dark chỉ bật khi Bibi bấm nút đổi giao diện */
 :root[data-theme=dark]{
   --bg:#1f1119;--dots:#2c1824;--surface:#2e1a27;--sunken:#3a2131;
   --ink:#ffe6f0;--muted:#d4a9bd;--line:#ffe6f0;
