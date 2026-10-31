@@ -10,6 +10,8 @@ python server.py
 
 Mở http://localhost:8080. Windows có thể dùng `py server.py`. Đổi cổng bằng biến môi trường `PORT`. Chỉ bind loopback; đây chưa phải cấu hình public production.
 
+Trên Windows, chạy `powershell -ExecutionPolicy Bypass -File .\start.ps1` để khởi động nền, ghi log vào `data/server.*.log`, kiểm tra API rồi mở trình duyệt. Script sử dụng server đang chạy nếu API phản hồi.
+
 ```sh
 python -m unittest discover -s tests -v
 ```
