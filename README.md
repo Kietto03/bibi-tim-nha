@@ -32,6 +32,12 @@ Chỉ nhận tin có giá VND, bằng chứng kỳ thuê tháng, loại căn h�
 
 ## Mở rộng
 
+## GitHub Pages
+
+Workflow `.github/workflows/pages.yml` build và deploy giao diện public trên push vào main/master, chạy thủ công hoặc mỗi 6 giờ. Trong Settings → Pages, chọn Source: GitHub Actions. GitHub Pages không chạy Python server: runner thu thập dữ liệu rồi đóng gói `listings.json` cùng giao diện. Nút tải lại chỉ đọc dữ liệu đã xuất; không kích hoạt crawler từ trình duyệt. Lịch Actions có thể chạy trễ hoặc bị GitHub tạm ngừng trong repo lâu không hoạt động. Tin có thể vẫn rỗng nếu nguồn chặn bot hoặc thiếu JSON-LD.
+
+`python build_pages.py` tạo `dist/` không crawl, `python build_pages.py --crawl` thu thập trước khi tạo. Ảnh Bibi được đóng gói vào trang public theo yêu cầu công khai ứng dụng.
+
 Thêm nguồn tin vào `sources.json` với origin tin cậy, entry và limit. Nếu nguồn không xuất JSON-LD, viết extractor riêng trong `crawler.py`, giữ hợp đồng trường của `extract`, gọi `eligible` trước khi lưu và thêm fixture kiểm thử. Trước triển khai internet cần xác thực endpoint crawl, giới hạn tần suất, HTTPS, giám sát và kho lưu trữ phù hợp. Không cho người dùng nhập URL tùy ý vào crawler.
 
 ## Thiết kế
