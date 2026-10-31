@@ -9,7 +9,7 @@ from server import merge
 CARDS='''<ul><li><div class="img"><img data-src="https://cdn.example.com/a.jpg"></div>
 <a href="/quan-2/cho-thue-can-ho-thao-dien-id101"><h2>Cho thuê căn hộ Thảo Điền 2PN</h2></a>
 <div class="prop-addr">Quận 2 (TP. Thủ Đức), TPHCM</div><ul><li>65 m<sup>2</sup></li><li>2 PN</li></ul><div class="price">10,5 triệu</div></li>
-<li><a href="/quan-2/cho-thue-can-ho-sala-id102"><h2>Căn hộ Sala giá 25 triệu</h2></a><div class="prop-addr">Quận 2</div><div class="price">25 triệu</div></li>
+<li><a href="/quan-2/cho-thue-can-ho-sala-id102"><h2>Căn hộ Sala giá 35 triệu</h2></a><div class="prop-addr">Quận 2</div><div class="price">35 triệu</div></li>
 <li><a href="/quan-2/cho-thue-can-ho-ngay-id103"><h2>Căn hộ An Phú theo ngày</h2></a><div class="prop-addr">Quận 2</div><div class="price">9 triệu/ngày</div></li></ul>'''
 MICRO='''<article itemscope itemtype="https://schema.org/RealEstateListing"><a itemprop="url" href="/can-ho-thao-dien-902.html"><h3 itemprop="name">Căn hộ 1PN Thảo Điền</h3></a>
 <img itemprop="image" src="https://example.com/x.jpg"><span class="price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">Giá: <span itemprop="price" content="9000000">9 triệu / tháng</span></span>
@@ -19,7 +19,7 @@ CONFIG={'detail':r'-id\d+$','rent':True,'kind':'căn hộ'}
 class CrawlerTests(unittest.TestCase):
     def item(self,price=10_000_000): return {'title':'Cho thuê căn hộ Thảo Điền','address':'Quận 2','price':price,'monthly':True,'url':'https://example.com/tin/1','kind':'Apartment'}
     def test_strict_boundaries(self):
-        for p,want in [(8_000_000,False),(8_000_001,True),(11_999_999,True),(12_000_000,False)]: self.assertEqual(eligible(self.item(p)),want)
+        for p,want in [(4_999_999,False),(5_000_000,True),(25_000_000,True),(25_000_001,False)]: self.assertEqual(eligible(self.item(p)),want)
     def test_reject_wrong_district_and_period(self):
         i=self.item();i.update(title='Cho thuê căn hộ',address='Quận 12');self.assertFalse(eligible(i))
         i=self.item();i.update(title='Cho thuê căn hộ',address='An Phú Đông, Quận 12');self.assertFalse(eligible(i))

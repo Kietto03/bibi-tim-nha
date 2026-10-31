@@ -25,10 +25,13 @@ def canonical(url):
 
 AREA = re.compile(r'\b(quan\s*2|q\.?\s*2|thao dien|an phu(?! dong)|binh trung|thanh my loi|cat lai|thu thiem|an khanh|binh an|binh khanh)\b')
 
+# Lưu rộng hơn khoảng Bibi tìm (8–12 triệu) để web lọc lại được; khoảng mặc định nằm ở app.js.
+MIN_PRICE, MAX_PRICE = 5_000_000, 25_000_000
+
 def eligible(item):
     area = AREA.search(fold(str(item.get('address','')) + ' ' + item.get('title','')))
     apartment = any(x in fold(item.get('title','') + ' ' + item.get('kind','')) for x in ['can ho','chung cu','apartment','condominium'])
-    return bool(area and apartment and 8_000_000 < item.get('price',0) < 12_000_000 and item.get('monthly',False))
+    return bool(area and apartment and MIN_PRICE <= item.get('price',0) <= MAX_PRICE and item.get('monthly',False))
 
 def parse_price(text):
     """'9,5 triệu' / '12 tr/tháng' / '8.500.000 đ' -> VND; None when absent, negotiable or not VND."""
@@ -243,7 +246,7 @@ def crawl_source(config):
             found=extract(html,url,config['name'],config)
             items.extend(found)
         items=dedupe(items)
-        status.update(state='ok' if items else 'empty',message=f"Đã đọc {status['pages']} trang danh sách" if items else f"Đã đọc {status['pages']} trang nhưng chưa có tin 8–12 triệu phù hợp.")
+        status.update(state='ok' if items else 'empty',message=f"Đã đọc {status['pages']} trang danh sách" if items else f"Đã đọc {status['pages']} trang nhưng chưa có căn hộ Quận 2 trong khoảng 5–25 triệu.")
     except HTTPError as error:
         status.update(state='blocked' if error.code in (401,403,429) else 'error',
                       message='Nguồn chặn truy cập tự động (HTTP %d); Bibi không vượt chặn.'%error.code if error.code in (401,403,429) else 'HTTP %d'%error.code)

@@ -114,6 +114,29 @@ select{appearance:none;-webkit-appearance:none;border:0;background:transparent v
 select option{background:var(--surface);color:var(--ink)}
 .search-panel .primary{min-height:60px;padding:0 28px;font-size:17px;border-radius:20px}
 
+/* Bộ lọc thêm: chip giá kiểu sticker + select nhỏ + công tắc */
+.filter-bar{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 28px;margin-top:22px;padding:18px 22px;background:var(--surface);border:var(--bw) dashed var(--line);border-radius:24px}
+.filter-group{display:flex;flex-direction:column;gap:8px}
+.filter-label,.mini>span{font-size:13px;font-weight:800;color:var(--pink-ink)}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:0 14px;font-size:14px;box-shadow:2px 2px 0 var(--shade)}
+.chip small{min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:var(--sunken);font-size:11px;font-weight:800;display:inline-grid;place-items:center}
+.chip[aria-pressed=true]{background:var(--pink);color:var(--on-pink);transform:rotate(-2deg)}
+.chip[aria-pressed=true] small{background:var(--surface);color:var(--ink)}
+.filter-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
+.mini{display:flex;flex-direction:column;gap:6px}
+.mini select{min-height:40px;padding:0 34px 0 14px;border:2px solid var(--line);border-radius:999px;background-color:var(--surface);background-position:right 12px center;font-size:14px;width:auto;max-width:200px}
+.mini select:disabled{opacity:.55;cursor:not-allowed}
+.toggle{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 10px;border:2px solid var(--line);border-radius:999px;background:var(--surface);font-size:14px;font-weight:800;cursor:pointer;user-select:none}
+.toggle{white-space:nowrap}
+.toggle input{appearance:none;-webkit-appearance:none;margin:0;flex:none;width:20px;height:20px;min-height:0;min-width:0;border:2px solid var(--line);border-radius:7px;background:var(--surface);cursor:pointer;display:grid;place-items:center;transition:background .2s}
+.toggle input:checked{background:var(--pink)}
+.toggle input:checked::after{content:"";width:5px;height:10px;border:solid var(--on-pink);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.toggle:has(input:checked){background:var(--pink-soft)}
+.toggle:has(input:focus-visible){outline:3px dashed var(--pink-ink);outline-offset:3px}
+.reset{min-height:40px;border-style:dashed;box-shadow:none;background:transparent;color:var(--pink-ink);font-size:14px}
+.reset:hover{box-shadow:none;transform:rotate(-2deg);background:var(--pink-soft)}
+
 /* Results */
 .content{padding-top:88px;scroll-margin-top:96px}
 .section-title{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
@@ -219,6 +242,10 @@ h2 span{text-decoration:underline wavy var(--pink) 3px;text-underline-offset:10p
   .polaroid figcaption{text-align:left;padding-left:6px}
   .stamp strong{font-size:30px}
   .search-panel{grid-template-columns:1fr;border-radius:24px}
+  .filter-bar{padding:16px;border-radius:20px}
+  .filter-row{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .mini select{max-width:none;width:100%}
+  .reset{grid-column:1/-1}
   .content{padding-top:64px}
   .section-title{flex-direction:column;align-items:stretch}
   .actions{justify-content:space-between}

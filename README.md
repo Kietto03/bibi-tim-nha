@@ -1,6 +1,6 @@
 # Bibi tìm nhà ♡
 
-Ứng dụng web tổng hợp căn hộ cho thuê tại **khu vực Quận 2 (cũ)**, giá thuê **lớn hơn 8.000.000 và nhỏ hơn 12.000.000 VND/tháng**. Python 3.10+, không cần cài dependency; frontend HTML/CSS/JS.
+Ứng dụng web tổng hợp căn hộ cho thuê tại **khu vực Quận 2 (cũ)**. Crawler lưu tin **5–25 triệu VND/tháng**; web mặc định lọc khoảng Bibi tìm là **lớn hơn 8 và nhỏ hơn 12 triệu**. Python 3.10+, không cần cài dependency; frontend HTML/CSS/JS.
 
 ## Chạy
 
@@ -21,13 +21,13 @@ python -m unittest discover -s tests -v
 ## Có gì?
 
 - Giao diện hoạt hình hồng kiểu sổ sticker, ảnh Bibi làm nhân vật chính. Mặc định giao diện sáng; nút mặt trời/mặt trăng chuyển sang tối và được nhớ trên trình duyệt.
-- Tìm kiếm không dấu, lọc khu vực/phòng ngủ, sắp xếp giá, lưu yêu thích trên trình duyệt.
+- Tìm kiếm không dấu; lọc khu vực, phòng ngủ, khoảng giá (chip có đếm số căn), diện tích, nguồn tin, chỉ tin có ảnh, tin mới 24 giờ; sắp xếp mới nhất, giá, diện tích, giá/m². Bộ lọc và yêu thích lưu trên trình duyệt; tab "Đã thương" luôn hiện đủ căn đã lưu.
 - Tự hiện **tin thật** khi đã có dữ liệu; chế độ **minh họa** chỉ dùng khi chưa có tin. Trang tự tải lại dữ liệu mỗi 5 phút.
 - API `GET /api/listings`, `GET /api/sources`, `POST /api/crawl`; crawl nền, trạng thái từng nguồn, lưu JSON atomic.
 
 ## Thu thập dữ liệu
 
-Nguồn cấu hình trong `sources.json`: Mogi, Mua Bán, Rever, Nhà Đất 24h, Batdongsan.vn, 123nhadatviet, Alonhadat, Batdongsan.com.vn, Nhà Tốt. Mỗi nguồn khai báo trang danh sách (`entry`), mẫu phân trang (`page`, ví dụ `?cp={n}`, `/p{n}`, `/trang-{n}`), số trang (`pages`) và mẫu URL tin chi tiết (`detail`).
+Nguồn cấu hình trong `sources.json` (17 nguồn): Mogi, Mua Bán, Rever, Nhà Đất 24h, Batdongsan.vn, Bds.com.vn, Batdongsanonline, Alo Mua Bán Nhà Đất, Phòng Trọ 123, i-Batdongsan, Homedy, Hoozing, Guland, 123nhadatviet, Alonhadat, Batdongsan.com.vn, Nhà Tốt. Mỗi nguồn khai báo trang danh sách (`entry`), mẫu phân trang (`page`, ví dụ `?cp={n}`, `/p{n}`, `/trang-{n}`), số trang (`pages`) và mẫu URL tin chi tiết (`detail`).
 
 `crawler.py` đọc trang danh sách theo ba cách, không cần adapter riêng cho từng site:
 
@@ -35,11 +35,11 @@ Nguồn cấu hình trong `sources.json`: Mogi, Mua Bán, Rever, Nhà Đất 24h
 2. **Microdata** `itemscope` RealEstateListing (ví dụ Alonhadat, có kèm địa chỉ cũ "(cũ)").
 3. **Thẻ tin**: phần tử lớn nhất chỉ chứa đúng một link chi tiết; lấy tiêu đề, giá (`9,5 triệu`, `12tr/tháng`, `8.500.000 đ`), diện tích, phòng ngủ, địa chỉ, ảnh.
 
-Chỉ nhận tin có giá VND theo tháng (loại giá theo ngày, theo m², tỷ), loại căn hộ và khu vực Quận 2 cũ (gồm tên phường cũ/mới như Thảo Điền, An Phú, An Khánh, Bình Trưng, Cát Lái, Thủ Thiêm). Chống trùng theo URL chuẩn hoặc tiêu đề + địa chỉ + giá.
+Chỉ nhận tin giá 5–25 triệu VND theo tháng (`MIN_PRICE`/`MAX_PRICE` trong `crawler.py`) (loại giá theo ngày, theo m², tỷ), loại căn hộ và khu vực Quận 2 cũ (gồm tên phường cũ/mới như Thảo Điền, An Phú, An Khánh, Bình Trưng, Cát Lái, Thủ Thiêm). Chống trùng theo URL chuẩn hoặc tiêu đề + địa chỉ + giá.
 
 Mỗi lượt crawl gộp với dữ liệu cũ: tin giữ `firstSeen` (lần đầu thấy) và `seenAt` (lần cuối thấy); tin không còn xuất hiện quá 3 ngày bị xóa. Tôn trọng robots.txt (RFC 9309: lỗi 4xx = không giới hạn, 401/403/5xx = không vào), `Crawl-delay` và tối thiểu 2 giây giữa các trang cùng nguồn; mỗi nguồn tối đa khoảng 150 giây; các nguồn chạy song song.
 
-**Giới hạn**: Batdongsan.com.vn và Nhà Tốt trả 403 cho bot nên hiển thị trạng thái "Bị chặn"; Bibi không vượt chặn, không giả trình duyệt, không vượt CAPTCHA hay đăng nhập. Giá thuê căn hộ Quận 2 phần lớn trên 12 triệu, nên mỗi lượt thường chỉ vài chục tin lọt bộ lọc. Cấu trúc website có thể đổi; khi một nguồn chuyển sang "Chưa có tin phù hợp" lâu ngày, hãy kiểm tra lại `entry`/`page`/`detail`. Tin có thể đã cho thuê dù vẫn còn trên trang nguồn; luôn kiểm tra tin gốc.
+**Giới hạn**: Batdongsan.com.vn và Nhà Tốt trả 403 cho bot nên hiển thị trạng thái "Bị chặn"; Bibi không vượt chặn, không giả trình duyệt, không vượt CAPTCHA hay đăng nhập. Giá thuê căn hộ Quận 2 phần lớn trên 12 triệu; một lượt thường được khoảng 900 tin 5–25 triệu, trong đó khoảng 100 tin 8–12 triệu. Một số nguồn (Alonhadat, i-Batdongsan, 123nhadatviet) đôi khi trả 429 với IP của GitHub Actions; lượt sau sẽ thử lại. Cấu trúc website có thể đổi; khi một nguồn chuyển sang "Chưa có tin phù hợp" lâu ngày, hãy kiểm tra lại `entry`/`page`/`detail`. Tin có thể đã cho thuê dù vẫn còn trên trang nguồn; luôn kiểm tra tin gốc.
 
 ## GitHub Pages
 

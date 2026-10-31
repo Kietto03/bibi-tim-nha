@@ -68,12 +68,26 @@
       <span class="field-control"><svg class="icon"><use href="#i-search"/></svg><input id="query" placeholder="Tên chung cư, khu vực…" aria-label="Tìm theo chung cư hoặc khu vực"></span>
     </label>
     <label class="field"><span class="field-label">Khu vực</span>
-      <select id="ward"><option value="">Toàn Quận 2</option><option>Thảo Điền</option><option>An Phú</option><option>Bình Trưng</option><option>Thạnh Mỹ Lợi</option><option>Cát Lái</option><option>Thủ Thiêm</option></select>
+      <select id="ward"><option value="">Toàn Quận 2</option><option>Thảo Điền</option><option>An Phú</option><option>An Khánh</option><option>Bình An</option><option>Bình Trưng</option><option>Thạnh Mỹ Lợi</option><option>Cát Lái</option><option>Thủ Thiêm</option></select>
     </label>
     <label class="field"><span class="field-label">Phòng ngủ</span>
       <select id="beds"><option value="">Tất cả</option><option value="1">1 phòng ngủ</option><option value="2">2 phòng ngủ</option><option value="3">3 phòng ngủ</option></select>
     </label>
     <button id="search-button" class="primary"><svg class="icon"><use href="#i-search"/></svg>Tìm nhà xinh</button>
+  </section>
+
+  <section class="filter-bar" aria-label="Bộ lọc thêm">
+    <div class="filter-group">
+      <span class="filter-label" id="price-label">Khoảng giá / tháng</span>
+      <div id="price-chips" class="chip-row" role="group" aria-labelledby="price-label"></div>
+    </div>
+    <div class="filter-row">
+      <label class="mini"><span>Diện tích</span><select id="area"><option value="">Mọi diện tích</option><option value="0-40">Dưới 40 m²</option><option value="40-60">40 – 60 m²</option><option value="60-80">60 – 80 m²</option><option value="80-999">Trên 80 m²</option></select></label>
+      <label class="mini"><span>Nguồn tin</span><select id="source"><option value="">Tất cả nguồn</option></select></label>
+      <label class="toggle"><input type="checkbox" id="has-image"><span>Có ảnh thật</span></label>
+      <label class="toggle"><input type="checkbox" id="fresh"><span>Mới 24 giờ</span></label>
+      <button id="reset" class="reset">Xóa lọc</button>
+    </div>
   </section>
 
   <section class="content">
@@ -84,7 +98,7 @@
       </div>
       <div class="actions">
         <button id="refresh"><svg class="icon"><use href="#i-refresh"/></svg><span id="refresh-label">Cập nhật tin</span></button>
-        <label class="sort"><span>Xếp theo</span><select id="sort" aria-label="Sắp xếp"><option value="new">Mới nhất</option><option value="low">Giá thấp trước</option><option value="high">Giá cao trước</option></select></label>
+        <label class="sort"><span>Xếp theo</span><select id="sort" aria-label="Sắp xếp"><option value="new">Mới nhất</option><option value="low">Giá thấp trước</option><option value="high">Giá cao trước</option><option value="big">Rộng nhất</option><option value="ppm">Giá/m² tốt nhất</option></select></label>
       </div>
     </div>
 
