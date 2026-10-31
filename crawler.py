@@ -217,8 +217,9 @@ def page_urls(config):
     urls=[entry]
     for n in range(2,config.get('pages',1)+1):
         if not pattern: break
-        if pattern.startswith('?'): urls.append(entry+pattern.format(n=n))
-        elif entry.endswith('.html'): urls.append(entry[:-5]+pattern.format(n=n)+'.html')
+        ext=re.search(r'\.html?$',entry)
+        if pattern[0] in '?&': urls.append(entry+pattern.format(n=n))
+        elif ext: urls.append(entry[:ext.start()]+pattern.format(n=n)+ext.group())
         else: urls.append(entry.rstrip('/')+pattern.format(n=n))
     return urls
 

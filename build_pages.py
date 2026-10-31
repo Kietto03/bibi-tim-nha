@@ -1,7 +1,9 @@
 """Generate a self-contained Pages artifact; no local Python server required."""
 import argparse
 import json
+import os
 import shutil
+import time
 from pathlib import Path
 from server import refresh, load
 
@@ -15,6 +17,9 @@ def build(crawl=False):
     html = (target / 'index.html').read_text('utf-8')
     html = html.replace('href="/"', 'href="./"').replace('href="/style.css"', 'href="./style.css"').replace('src="/app.js"', 'src="./app.js"').replace('src="/assets/', 'src="./assets/')
     html = html.replace('<script src="./app.js"', '<script>window.BIBI_STATIC=true;</script><script src="./app.js"')
+    # Cache-bust: GitHub Pages caches assets ~10 minutes, so stale JS could show old data.
+    version = os.environ.get('GITHUB_SHA', str(int(time.time())))[:12]
+    html = html.replace('href="./style.css"', f'href="./style.css?v={version}"').replace('src="./app.js"', f'src="./app.js?v={version}"')
     (target / 'index.html').write_text(html, 'utf-8')
     js = (target / 'app.js').read_text('utf-8').replace("'/assets/", "'./assets/")
     js = js.replace("fetch('/api/listings'", "fetch(window.BIBI_STATIC?'./listings.json':'/api/listings'")
