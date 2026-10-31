@@ -1,0 +1,1 @@
+{"name":"bibi-tim-nha","private":true,"version":"1.0.0","scripts":{"start":"python server.py","test":"python -m unittest discover -s tests -v"}}
